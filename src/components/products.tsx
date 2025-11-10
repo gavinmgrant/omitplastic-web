@@ -10,7 +10,9 @@ import { getFavoritesByUserId } from "@/actions/favoriteAction"
 const Products: FC = () => {
   const [results, setResults] = useState<productType[]>([])
   const [loading, setLoading] = useState(false)
-  const [favoriteProductIds, setFavoriteProductIds] = useState<Set<string>>(new Set())
+  const [favoriteProductIds, setFavoriteProductIds] = useState<Set<string>>(
+    new Set()
+  )
   const searchParams = useSearchParams()
   const query = searchParams.get("q")
   const user = useUser()
@@ -21,7 +23,7 @@ const Products: FC = () => {
         setFavoriteProductIds(new Set())
         return
       }
-      
+
       const favorites = await getFavoritesByUserId(user.id)
       const favoriteIds = new Set(
         favorites
@@ -30,7 +32,7 @@ const Products: FC = () => {
       )
       setFavoriteProductIds(favoriteIds)
     }
-    
+
     fetchFavorites()
   }, [user?.id])
 
@@ -59,11 +61,12 @@ const Products: FC = () => {
   return (
     <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
       {results?.map((product) => (
-        <ProductCard 
-          key={product.id} 
+        <ProductCard
+          key={product.id}
           product={product as productType}
           isFavorite={favoriteProductIds.has(product.id)}
           onFavoriteChange={handleFavoriteChange}
+          isLoggedIn={user?.id ? true : false}
         />
       ))}
       {results.length === 0 && !loading && (

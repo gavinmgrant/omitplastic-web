@@ -21,12 +21,14 @@ interface Props {
   product: productType
   isFavorite?: boolean
   onFavoriteChange?: (productId: string, isFavorite: boolean) => void
+  isLoggedIn?: boolean
 }
 
 const ProductCard: FC<Props> = ({
   product,
   isFavorite = false,
   onFavoriteChange,
+  isLoggedIn = false,
 }) => {
   const { sources } = product
 
@@ -79,7 +81,11 @@ const ProductCard: FC<Props> = ({
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{isFavorite ? "Remove from favorites" : "Add to favorites"}</p>
+          {isLoggedIn ? (
+            <p>{isFavorite ? "Remove from favorites" : "Add to favorites"}</p>
+          ) : (
+            <p>Sign in to add to favorites</p>
+          )}
         </TooltipContent>
       </Tooltip>
     </div>
