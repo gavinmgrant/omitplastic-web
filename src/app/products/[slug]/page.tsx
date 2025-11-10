@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { getProductBySlug } from "@/lib/products"
-import Product from "@/components/product"
+import ProductWithFavorites from "@/components/product-with-favorites"
 import { notFound } from "next/navigation"
 
 export async function generateMetadata({
@@ -34,5 +34,5 @@ export default async function ProductPage({
     notFound()
   }
 
-  return <Product product={product} />
+  return <ProductWithFavorites product={product} />
 }

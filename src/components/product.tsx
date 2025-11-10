@@ -7,9 +7,15 @@ import FavoriteButton from "@/components/favorite-button"
 
 interface Props {
   product: productType
+  isFavorite?: boolean
+  onFavoriteChange?: (productId: string, isFavorite: boolean) => void
 }
 
-const Product: FC<Props> = ({ product }) => {
+const Product: FC<Props> = ({
+  product,
+  isFavorite = false,
+  onFavoriteChange,
+}) => {
   const { sources } = product
 
   return (
@@ -45,7 +51,11 @@ const Product: FC<Props> = ({ product }) => {
                 ))}
               </div>
             )}
-            <FavoriteButton productId={product.id} />
+            <FavoriteButton
+              productId={product.id}
+              isFavorite={isFavorite}
+              onFavoriteChange={onFavoriteChange}
+            />
           </div>
         </div>
       </div>
