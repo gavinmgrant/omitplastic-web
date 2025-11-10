@@ -33,12 +33,6 @@ const Header = () => {
         <div className="w-full! sm:w-[300px]">
           <SearchInput />
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild></TooltipTrigger>
-          <TooltipContent>
-            <p>Add to library</p>
-          </TooltipContent>
-        </Tooltip>
 
         <Tooltip>
           <TooltipTrigger asChild>

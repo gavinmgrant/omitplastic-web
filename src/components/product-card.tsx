@@ -8,6 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import FavoriteButton from "@/components/favorite-button"
 import { productType } from "@/types"
 import { Button } from "./ui/button"
@@ -61,14 +66,22 @@ const ProductCard: FC<Props> = ({
           </div>
         </Card>
       </Link>
-      <div className="z-10 absolute bottom-6 left-6">
-        <FavoriteButton
-          productId={product.id}
-          showText={false}
-          isFavorite={isFavorite}
-          onFavoriteChange={onFavoriteChange}
-        />
-      </div>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="z-10 absolute bottom-6 left-6">
+            <FavoriteButton
+              productId={product.id}
+              showText={false}
+              isFavorite={isFavorite}
+              onFavoriteChange={onFavoriteChange}
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{isFavorite ? "Remove from favorites" : "Add to favorites"}</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   )
 }
