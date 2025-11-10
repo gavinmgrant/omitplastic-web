@@ -1,11 +1,9 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { StackProvider, StackTheme } from "@stackframe/stack"
 import { stackClientApp } from "@/stack/client"
-import { Geist, Geist_Mono, Fredoka } from "next/font/google"
-import { Button } from "@/components/ui/button"
-import SearchInput from "@/components/search-input"
-import { cn } from "@/lib/utils"
+import { Geist, Geist_Mono } from "next/font/google"
+import Header from "@/components/header"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -16,12 +14,6 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-})
-
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -42,27 +34,9 @@ export default function RootLayout({
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>
-            <header className="mb-4 flex items-center justify-between gap-4">
-              <Link
-                href="/"
-                className={cn(
-                  "text-xl sm:text-2xl font-semibold",
-                  fredoka.className
-                )}
-              >
-                OmitPlastic
-              </Link>
-              <div className="flex items-center gap-4 w-full sm:w-[400px] justify-end">
-                <div className="w-full! sm:w-[300px]">
-                  <SearchInput />
-                </div>
-                <Link href="/products" className="hidden md:block">
-                  <Button variant="outline" size="sm">
-                    All Products
-                  </Button>
-                </Link>
-              </div>
-            </header>
+            <Suspense fallback={<div className="h-8 w-full mb-4"></div>}>
+              <Header />
+            </Suspense>
             <main className="min-h-[calc(100vh-80px)]">{children}</main>
           </StackTheme>
         </StackProvider>

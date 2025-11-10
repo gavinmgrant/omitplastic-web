@@ -3,6 +3,7 @@ import { FC } from "react"
 import { productType } from "@/types"
 import Image from "next/image"
 import BuyButton from "@/components/buy-button"
+import FavoriteButton from "@/components/favorite-button"
 
 interface Props {
   product: productType
@@ -44,6 +45,7 @@ const Product: FC<Props> = ({ product }) => {
                 ))}
               </div>
             )}
+            <FavoriteButton productId={product.id} />
           </div>
         </div>
       </div>
