@@ -47,6 +47,21 @@ const Header = () => {
           </TooltipContent>
         </Tooltip>
 
+        {user?.id && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="/favorites">
+                <Button variant="outline" size="sm">
+                  <Heart className="size-4" />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Favorites</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
+
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
@@ -63,35 +78,20 @@ const Header = () => {
         </Tooltip>
 
         {user?.id && (
-          <>
+          <div className="hidden sm:block">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="/favorites">
+                <Link href="/handler/sign-out">
                   <Button variant="outline" size="sm">
-                    <Heart className="size-4" />
+                    <LogOut className="size-4" />
                   </Button>
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Favorites</p>
+                <p>Sign Out</p>
               </TooltipContent>
             </Tooltip>
-
-            <div className="hidden sm:block">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href="/handler/sign-out">
-                    <Button variant="outline" size="sm">
-                      <LogOut className="size-4" />
-                    </Button>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Sign Out</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </>
+          </div>
         )}
       </div>
     </header>
