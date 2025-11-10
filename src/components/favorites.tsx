@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState, useRef, useMemo } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { useUser } from "@stackframe/stack"
 import { HeartCrack } from "lucide-react"
@@ -12,8 +12,7 @@ import { favoriteType, productType } from "@/types"
 const Favorites = () => {
   const [favorites, setFavorites] = useState<favoriteType[]>([])
   const [products, setProducts] = useState<productType[]>([])
-  const [loading, setLoading] = useState(false)
-  const isInitialMount = useRef(true)
+  const [isLoading, setIsLoading] = useState(true)
   const user = useUser()
 
   const favoriteProductIds = useMemo(() => {
@@ -21,33 +20,40 @@ const Favorites = () => {
   }, [favorites])
 
   useEffect(() => {
-    const fetchFavorites = async () => {
-      isInitialMount.current = false
-      setLoading(true)
-      const results = await getFavoritesByUserId(user?.id || "")
-      setFavorites(results as favoriteType[])
-      setLoading(false)
-    }
-    if (user?.id && isInitialMount.current) fetchFavorites()
-  }, [user?.id, favorites.length])
+    const loadFavorites = async () => {
+      setIsLoading(true)
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (favorites.length === 0) {
+      if (!user?.id) {
+        setFavorites([])
         setProducts([])
-        setLoading(false)
+        setIsLoading(false)
         return
       }
 
-      setLoading(true)
-      const productIds = favorites.map((favorite) => favorite.productId)
-      const products = await getProductsByIds(productIds)
-      setProducts(products)
-      setLoading(false)
+      try {
+        const favoritesData = await getFavoritesByUserId(user.id)
+        setFavorites(favoritesData as favoriteType[])
+
+        if (favoritesData.length > 0) {
+          const productIds = favoritesData
+            .map((f) => f.productId)
+            .filter((id): id is string => id !== null && id !== undefined)
+          const productsData = await getProductsByIds(productIds)
+          setProducts(productsData)
+        } else {
+          setProducts([])
+        }
+      } catch (error) {
+        console.error("Error loading favorites:", error)
+        setFavorites([])
+        setProducts([])
+      } finally {
+        setIsLoading(false)
+      }
     }
 
-    fetchProducts()
-  }, [favorites])
+    loadFavorites()
+  }, [user?.id])
 
   const handleFavoriteChange = (productId: string, isFavorite: boolean) => {
     if (!isFavorite) {
@@ -56,9 +62,13 @@ const Favorites = () => {
     }
   }
 
+  if (isLoading) {
+    return null
+  }
+
   return (
     <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
-      {products.length === 0 && !loading && (
+      {products.length === 0 && (
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -72,7 +82,6 @@ const Favorites = () => {
         </div>
       )}
       {products.length > 0 &&
-        !loading &&
         products?.map((product) => {
           return (
             <div key={product.id}>
