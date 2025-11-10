@@ -14,9 +14,11 @@ import { Button } from "./ui/button"
 
 interface Props {
   product: productType
+  isFavorite?: boolean
+  onFavoriteChange?: (productId: string, isFavorite: boolean) => void
 }
 
-const ProductCard: FC<Props> = ({ product }) => {
+const ProductCard: FC<Props> = ({ product, isFavorite = false, onFavoriteChange }) => {
   const { sources } = product
 
   return (
@@ -54,7 +56,12 @@ const ProductCard: FC<Props> = ({ product }) => {
         </Card>
       </Link>
       <div className="z-10 absolute bottom-6 left-6">
-        <FavoriteButton productId={product.id} showText={false} />
+        <FavoriteButton 
+          productId={product.id} 
+          showText={false} 
+          isFavorite={isFavorite}
+          onFavoriteChange={onFavoriteChange}
+        />
       </div>
     </div>
   )

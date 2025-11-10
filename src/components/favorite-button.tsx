@@ -1,48 +1,56 @@
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "./ui/button"
 import { Heart } from "lucide-react"
 import { useUser } from "@stackframe/stack"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  addFavorite,
-  checkIfFavorite,
-  removeFavorite,
-} from "@/actions/favoriteAction"
+import { addFavorite, removeFavorite } from "@/actions/favoriteAction"
 
 interface Props {
   productId: string
   showText?: boolean
+  isFavorite?: boolean
+  onFavoriteChange?: (productId: string, isFavorite: boolean) => void
 }
 
-const FavoriteButton = ({ productId, showText = true }: Props) => {
+const FavoriteButton = ({
+  productId,
+  showText = true,
+  isFavorite: initialIsFavorite = false,
+  onFavoriteChange,
+}: Props) => {
   const [isSaving, setIsSaving] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
 
   const user = useUser()
 
+  useEffect(() => {
+    if (!isSaving) {
+      setIsFavorite(initialIsFavorite)
+    }
+  }, [initialIsFavorite, isSaving])
+
   const handleFavorite = async () => {
     if (!user?.id) return
-    const isFav = await checkIfFavorite(user?.id || "", productId)
-    if (isFav) {
-      setIsSaving(true)
-      await removeFavorite(user.id, productId)
-      setIsFavorite(false)
-      setIsSaving(false)
-    } else {
-      setIsSaving(true)
-      await addFavorite(user.id, productId)
-      setIsFavorite(true)
+
+    const newFavoriteState = !isFavorite
+    setIsSaving(true)
+    setIsFavorite(newFavoriteState)
+
+    try {
+      if (newFavoriteState) {
+        await addFavorite(user.id, productId)
+      } else {
+        await removeFavorite(user.id, productId)
+      }
+
+      onFavoriteChange?.(productId, newFavoriteState)
+    } catch (error) {
+      setIsFavorite(!newFavoriteState)
+      console.error("Error updating favorite:", error)
+    } finally {
       setIsSaving(false)
     }
   }
-
-  useEffect(() => {
-    const fetchIsFavorite = async () => {
-      const isFav = await checkIfFavorite(user?.id || "", productId)
-      setIsFavorite(isFav)
-    }
-    fetchIsFavorite()
-  }, [user?.id, productId])
 
   return (
     <Button

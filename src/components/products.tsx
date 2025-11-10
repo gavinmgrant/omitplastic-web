@@ -1,15 +1,38 @@
 "use client"
 import { FC, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
+import { useUser } from "@stackframe/stack"
 import { productType } from "@/types"
 import ProductCard from "@/components/product-card"
 import { searchProducts } from "@/actions/searchAction"
+import { getFavoritesByUserId } from "@/actions/favoriteAction"
 
 const Products: FC = () => {
   const [results, setResults] = useState<productType[]>([])
   const [loading, setLoading] = useState(false)
+  const [favoriteProductIds, setFavoriteProductIds] = useState<Set<string>>(new Set())
   const searchParams = useSearchParams()
   const query = searchParams.get("q")
+  const user = useUser()
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!user?.id) {
+        setFavoriteProductIds(new Set())
+        return
+      }
+      
+      const favorites = await getFavoritesByUserId(user.id)
+      const favoriteIds = new Set(
+        favorites
+          .map((f) => f.productId)
+          .filter((id): id is string => id !== null && id !== undefined)
+      )
+      setFavoriteProductIds(favoriteIds)
+    }
+    
+    fetchFavorites()
+  }, [user?.id])
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -21,10 +44,27 @@ const Products: FC = () => {
     fetchResults()
   }, [query])
 
+  const handleFavoriteChange = (productId: string, isFavorite: boolean) => {
+    setFavoriteProductIds((prev) => {
+      const newSet = new Set(prev)
+      if (isFavorite) {
+        newSet.add(productId)
+      } else {
+        newSet.delete(productId)
+      }
+      return newSet
+    })
+  }
+
   return (
     <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
       {results?.map((product) => (
-        <ProductCard key={product.id} product={product as productType} />
+        <ProductCard 
+          key={product.id} 
+          product={product as productType}
+          isFavorite={favoriteProductIds.has(product.id)}
+          onFavoriteChange={handleFavoriteChange}
+        />
       ))}
       {results.length === 0 && !loading && (
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
