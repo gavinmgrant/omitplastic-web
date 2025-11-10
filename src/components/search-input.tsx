@@ -7,14 +7,16 @@ import { cn } from "@/lib/utils"
 
 interface SearchInputProps {
   expanded?: boolean
+  disableExpand?: boolean
   placeholder?: string
   padding?: string
 }
 
 const SearchInput = ({
   expanded = false,
-  placeholder = "Search...",
-  padding = "p-4",
+  disableExpand = false,
+  placeholder = "Search",
+  padding = "px-4 py-3.5",
 }: SearchInputProps) => {
   const [isExpanded, setIsExpanded] = useState(expanded)
   const [query, setQuery] = useState("")
@@ -22,7 +24,7 @@ const SearchInput = ({
   const router = useRouter()
 
   const handleSearch = () => {
-    if (!query.trim()) {
+    if (!query.trim() && !disableExpand) {
       setIsExpanded(!isExpanded)
     } else {
       router.push(`/products?q=${query}`)
@@ -46,7 +48,7 @@ const SearchInput = ({
         className={cn(isExpanded ? "block" : "hidden", padding)}
       />
       <Search
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 w-5 h-5 cursor-pointer"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4.5 h-4.5 cursor-pointer"
         onClick={handleSearch}
       />
     </form>
