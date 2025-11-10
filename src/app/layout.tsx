@@ -30,11 +30,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="overscroll-none">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} p-4 relative`}
+        className={`${geistSans.variable} ${geistMono.variable} px-4 pb-4 relative`}
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>
-            <Suspense fallback={<div className="h-8 w-full mb-4"></div>}>
+            <Suspense fallback={<div className="h-12 w-full mb-4"></div>}>
               <Header />
             </Suspense>
             <main className="min-h-[calc(100vh-80px)]">{children}</main>

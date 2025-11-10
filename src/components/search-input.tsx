@@ -8,11 +8,13 @@ import { cn } from "@/lib/utils"
 interface SearchInputProps {
   expanded?: boolean
   placeholder?: string
+  padding?: string
 }
 
 const SearchInput = ({
   expanded = false,
   placeholder = "Search...",
+  padding = "p-4",
 }: SearchInputProps) => {
   const [isExpanded, setIsExpanded] = useState(expanded)
   const [query, setQuery] = useState("")
@@ -41,7 +43,7 @@ const SearchInput = ({
         placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className={cn(isExpanded ? "block" : "hidden")}
+        className={cn(isExpanded ? "block" : "hidden", padding)}
       />
       <Search
         className="absolute right-2 top-1/2 transform -translate-y-1/2 w-5 h-5 cursor-pointer"

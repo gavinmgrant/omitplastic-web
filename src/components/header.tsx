@@ -22,7 +22,7 @@ const Header = () => {
   const user = useUser()
 
   return (
-    <header className="mb-4 flex items-center justify-between gap-4">
+    <header className="p-4 flex items-center justify-between gap-4 sticky top-0 left-4 right-4 z-50 -mx-4 backdrop-blur-md">
       <Link
         href="/"
         className={cn("text-xl sm:text-2xl font-semibold", fredoka.className)}
