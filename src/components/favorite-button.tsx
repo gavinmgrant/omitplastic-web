@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Button } from "./ui/button"
 import { Heart } from "lucide-react"
 import { useUser } from "@stackframe/stack"
+import { Spinner } from "@/components/ui/spinner"
 import {
   addFavorite,
   checkIfFavorite,
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const FavoriteButton = ({ productId, showText = true }: Props) => {
+  const [isSaving, setIsSaving] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
 
   const user = useUser()
@@ -22,11 +24,15 @@ const FavoriteButton = ({ productId, showText = true }: Props) => {
     if (!user?.id) return
     const isFav = await checkIfFavorite(user?.id || "", productId)
     if (isFav) {
+      setIsSaving(true)
       await removeFavorite(user.id, productId)
       setIsFavorite(false)
+      setIsSaving(false)
     } else {
+      setIsSaving(true)
       await addFavorite(user.id, productId)
       setIsFavorite(true)
+      setIsSaving(false)
     }
   }
 
@@ -46,11 +52,15 @@ const FavoriteButton = ({ productId, showText = true }: Props) => {
       disabled={!user?.id}
       className="flex items-center justify-center gap-2"
     >
-      <Heart
-        className="size-4"
-        fill={isFavorite ? "red" : "none"}
-        stroke="red"
-      />
+      {isSaving ? (
+        <Spinner className="size-4 text-red-700" />
+      ) : (
+        <Heart
+          className="size-4"
+          fill={isFavorite ? "red" : "none"}
+          stroke="red"
+        />
+      )}
       {showText &&
         user?.id &&
         (isFavorite ? "Remove from favorites" : "Add to favorites")}
