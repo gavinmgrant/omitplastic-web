@@ -12,7 +12,7 @@ export default async function Home() {
           <SearchInput
             expanded={true}
             disableExpand={true}
-            placeholder="Search for products, use less plastic"
+            placeholder="Search for products that use less plastic"
             padding="py-5"
           />
         </div>

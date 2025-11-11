@@ -15,7 +15,7 @@ const BuyButton = ({ source }: { source: sourceType }) => {
           Buy from {source.sourceName} {source.price && `$${source.price}`}
         </Button>
       </Link>
-      {source.sourceName && (
+      {source.sourceName === "Amazon" && (
         <p className="text-sm text-stone-700 mt-2">
           When you buy this product using our links, we may earn an affiliate
           commission.
