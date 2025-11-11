@@ -59,26 +59,46 @@ const Products: FC = () => {
   }
 
   return (
-    <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
-      {results?.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product as productType}
-          isFavorite={favoriteProductIds.has(product.id)}
-          onFavoriteChange={handleFavoriteChange}
-          isLoggedIn={user?.id ? true : false}
-        />
-      ))}
-      {results.length === 0 && !loading && (
-        <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
-          <p className="text-stone-700">
-            No results found for &quot;
-            <span className="font-semibold">{query}</span>&quot;, try again with
-            a different query.
-          </p>
-        </div>
-      )}
-    </div>
+    <>
+      <div className="pb-4 text-sm">
+        {results.length > 0 && !loading ? (
+          <div>
+            {query ? (
+              <p>
+                {results.length} results found for &quot;
+                <span className="font-semibold">{query}</span>&quot;
+              </p>
+            ) : (
+              <p>All {results.length} products</p>
+            )}
+          </div>
+        ) : (
+          <div className="h-5">
+            {results.length > 0 && "Searching for products..."}
+          </div>
+        )}
+      </div>
+      <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
+        {results?.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product as productType}
+            isFavorite={favoriteProductIds.has(product.id)}
+            onFavoriteChange={handleFavoriteChange}
+            isLoggedIn={user?.id ? true : false}
+          />
+        ))}
+        {results.length === 0 && !loading && (
+          <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
+            <p className="text-stone-700">
+              No results found for &quot;
+              <span className="font-semibold">{query}</span>&quot;, try again
+              with a different query.
+            </p>
+          </div>
+        )}
+      </div>
+    </>
   )
 }
 
