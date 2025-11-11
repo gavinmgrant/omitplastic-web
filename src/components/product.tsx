@@ -51,11 +51,13 @@ const Product: FC<Props> = ({
                 ))}
               </div>
             )}
-            <FavoriteButton
-              productId={product.id}
-              isFavorite={isFavorite}
-              onFavoriteChange={onFavoriteChange}
-            />
+            <div className="w-full sm:w-52 flex items-center justify-start">
+              <FavoriteButton
+                productId={product.id}
+                isFavorite={isFavorite}
+                onFavoriteChange={onFavoriteChange}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -4,12 +4,20 @@ import { useSearchParams } from "next/navigation"
 import { useUser } from "@stackframe/stack"
 import { productType } from "@/types"
 import ProductCard from "@/components/product-card"
-import { searchProducts } from "@/actions/searchAction"
+import { searchProducts, type PaginatedResult } from "@/actions/searchAction"
 import { getFavoritesByUserId } from "@/actions/favoriteAction"
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
+
+const PRODUCTS_PER_PAGE = 9
 
 const Products: FC = () => {
   const [results, setResults] = useState<productType[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [totalResults, setTotalResults] = useState(0)
   const [favoriteProductIds, setFavoriteProductIds] = useState<Set<string>>(
     new Set()
   )
@@ -39,8 +47,22 @@ const Products: FC = () => {
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true)
-      const results = await searchProducts(query || "")
-      setResults(results as productType[])
+      setCurrentPage(1)
+      const result = await searchProducts(query || "", {
+        page: 1,
+        limit: PRODUCTS_PER_PAGE,
+      })
+
+      if (result && "pagination" in result) {
+        const paginatedResult = result as PaginatedResult<productType>
+        setResults(paginatedResult.data)
+        setHasMore(paginatedResult.pagination.hasMore)
+        setTotalResults(paginatedResult.pagination.total)
+      } else {
+        setResults(result as productType[])
+        setHasMore(false)
+        setTotalResults(result.length)
+      }
       setLoading(false)
     }
     fetchResults()
@@ -58,6 +80,25 @@ const Products: FC = () => {
     })
   }
 
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore) return
+
+    setLoadingMore(true)
+    const nextPage = currentPage + 1
+    const result = await searchProducts(query || "", {
+      page: nextPage,
+      limit: PRODUCTS_PER_PAGE,
+    })
+
+    if (result && "pagination" in result) {
+      const paginatedResult = result as PaginatedResult<productType>
+      setResults((prev) => [...prev, ...paginatedResult.data])
+      setHasMore(paginatedResult.pagination.hasMore)
+      setCurrentPage(nextPage)
+    }
+    setLoadingMore(false)
+  }
+
   return (
     <>
       <div className="pb-4 text-sm">
@@ -65,17 +106,17 @@ const Products: FC = () => {
           <div>
             {query ? (
               <p>
-                {results.length} results found for &quot;
+                Showing {results.length} of {totalResults} results for &quot;
                 <span className="font-semibold">{query}</span>&quot;
               </p>
             ) : (
-              <p>All {results.length} products</p>
+              <p>
+                Showing {results.length} of {totalResults} products
+              </p>
             )}
           </div>
         ) : (
-          <div className="h-5">
-            {results.length > 0 && "Searching for products..."}
-          </div>
+          <div className="h-5">{loading && "Loading products..."}</div>
         )}
       </div>
       <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
@@ -98,6 +139,23 @@ const Products: FC = () => {
           </div>
         )}
       </div>
+      {hasMore && (
+        <div className="flex justify-center mt-8">
+          <Button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            variant="outline"
+          >
+            {loadingMore ? (
+              <div className="flex items-center justify-center gap-2">
+                <Spinner className="size-4" /> Loading...
+              </div>
+            ) : (
+              "Load More"
+            )}
+          </Button>
+        </div>
+      )}
     </>
   )
 }

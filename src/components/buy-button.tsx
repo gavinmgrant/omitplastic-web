@@ -4,7 +4,7 @@ import { sourceType } from "@/types/sourceType"
 
 const BuyButton = ({ source }: { source: sourceType }) => {
   return (
-    <div>
+    <div className="w-full sm:w-auto">
       <Link
         href={source.sourceUrl || ""}
         className="w-full sm:w-auto"

@@ -58,7 +58,7 @@ const FavoriteButton = ({
       size="sm"
       onClick={handleFavorite}
       disabled={!user?.id}
-      className="flex items-center justify-center gap-2 h-9"
+      className="flex items-center justify-center gap-2 h-9 w-full"
     >
       {isSaving ? (
         <Spinner className="size-4 text-red-700" />
