@@ -7,6 +7,7 @@ import { getFavoritesByUserId } from "@/actions/favoriteAction"
 import { getProductsByIds } from "@/actions/productAction"
 import { Button } from "@/components/ui/button"
 import ProductCard from "@/components/product-card"
+import SkeletonProductCards from "@/components/skeleton-product-cards"
 import { favoriteType, productType } from "@/types"
 
 const Favorites = () => {
@@ -74,37 +75,34 @@ const Favorites = () => {
           </p>
         )}
       </div>
-      {isLoading ? (
-        <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center"></div>
-      ) : (
-        <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
-          {products.length === 0 && (
-            <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <p>No favorites found.</p>
-                  <Frown className="size-6" />
-                </div>
-                <Link href="/products">
-                  <Button>View Products</Button>
-                </Link>
+      <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
+        {isLoading ? (
+          <SkeletonProductCards />
+        ) : (
+          products?.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product as productType}
+              isFavorite={favoriteProductIds.has(product.id)}
+              onFavoriteChange={handleFavoriteChange}
+            />
+          ))
+        )}
+
+        {products.length === 0 && !isLoading && (
+          <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <p>No favorites found.</p>
+                <Frown className="size-6" />
               </div>
+              <Link href="/products">
+                <Button>View Products</Button>
+              </Link>
             </div>
-          )}
-          {products.length > 0 &&
-            products?.map((product) => {
-              return (
-                <div key={product.id}>
-                  <ProductCard
-                    product={product as productType}
-                    isFavorite={favoriteProductIds.has(product.id)}
-                    onFavoriteChange={handleFavoriteChange}
-                  />
-                </div>
-              )
-            })}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </>
   )
 }

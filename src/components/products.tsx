@@ -8,13 +8,14 @@ import { searchProducts, type PaginatedResult } from "@/actions/searchAction"
 import { getFavoritesByUserId } from "@/actions/favoriteAction"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
+import SkeletonProductCards from "@/components/skeleton-product-cards"
 
 const PRODUCTS_PER_PAGE = 9
 
 const Products: FC = () => {
   const [results, setResults] = useState<productType[]>([])
-  const [loading, setLoading] = useState(false)
-  const [loadingMore, setLoadingMore] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(false)
   const [totalResults, setTotalResults] = useState(0)
@@ -46,7 +47,7 @@ const Products: FC = () => {
 
   useEffect(() => {
     const fetchResults = async () => {
-      setLoading(true)
+      setIsLoading(true)
       setCurrentPage(1)
       const result = await searchProducts(query || "", {
         page: 1,
@@ -63,7 +64,7 @@ const Products: FC = () => {
         setHasMore(false)
         setTotalResults(result.length)
       }
-      setLoading(false)
+      setIsLoading(false)
     }
     fetchResults()
   }, [query])
@@ -81,9 +82,9 @@ const Products: FC = () => {
   }
 
   const handleLoadMore = async () => {
-    if (loadingMore || !hasMore) return
+    if (isLoadingMore || !hasMore) return
 
-    setLoadingMore(true)
+    setIsLoadingMore(true)
     const nextPage = currentPage + 1
     const result = await searchProducts(query || "", {
       page: nextPage,
@@ -96,13 +97,13 @@ const Products: FC = () => {
       setHasMore(paginatedResult.pagination.hasMore)
       setCurrentPage(nextPage)
     }
-    setLoadingMore(false)
+    setIsLoadingMore(false)
   }
 
   return (
     <>
       <div className="pb-4 text-sm">
-        {results.length > 0 && !loading ? (
+        {results.length > 0 && !isLoading ? (
           <div>
             {query ? (
               <p>
@@ -116,20 +117,24 @@ const Products: FC = () => {
             )}
           </div>
         ) : (
-          <div className="h-5">{loading && "Loading products..."}</div>
+          <div className="h-5">{isLoading && "Loading products..."}</div>
         )}
       </div>
       <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
-        {results?.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product as productType}
-            isFavorite={favoriteProductIds.has(product.id)}
-            onFavoriteChange={handleFavoriteChange}
-            isLoggedIn={user?.id ? true : false}
-          />
-        ))}
-        {results.length === 0 && !loading && (
+        {isLoading ? (
+          <SkeletonProductCards />
+        ) : (
+          results?.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product as productType}
+              isFavorite={favoriteProductIds.has(product.id)}
+              onFavoriteChange={handleFavoriteChange}
+              isLoggedIn={user?.id ? true : false}
+            />
+          ))
+        )}
+        {results.length === 0 && !isLoading && (
           <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
             <p className="text-stone-700">
               No results found for &quot;
@@ -143,10 +148,10 @@ const Products: FC = () => {
         <div className="flex justify-center mt-8">
           <Button
             onClick={handleLoadMore}
-            disabled={loadingMore}
+            disabled={isLoadingMore}
             variant="outline"
           >
-            {loadingMore ? (
+            {isLoadingMore ? (
               <div className="flex items-center justify-center gap-2">
                 <Spinner className="size-4" /> Loading...
               </div>
