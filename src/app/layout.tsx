@@ -2,18 +2,15 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { StackProvider, StackTheme } from "@stackframe/stack"
 import { stackClientApp } from "@/stack/client"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Lexend } from "next/font/google"
 import Header from "@/components/header"
+import { cn } from "@/lib/utils"
 import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lexend = Lexend({
+  variable: "--font-lexend",
   subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -30,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="overscroll-none">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} px-4 pb-4 relative`}
+        className={cn("px-4 pb-4 relative", lexend.className)}
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>

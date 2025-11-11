@@ -1,8 +1,6 @@
 "use client"
 import { useUser } from "@stackframe/stack"
-import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { Fredoka } from "next/font/google"
 import { UserRound, LogOut, Heart, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,21 +10,12 @@ import {
 } from "@/components/ui/tooltip"
 import SearchInput from "@/components/search-input"
 
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-})
-
 const Header = () => {
   const user = useUser()
 
   return (
     <header className="p-4 flex items-center justify-between gap-4 sticky top-0 left-4 right-4 z-50 -mx-4 backdrop-blur-md">
-      <Link
-        href="/"
-        className={cn("text-xl sm:text-2xl font-semibold", fredoka.className)}
-      >
+      <Link href="/" className="text-xl sm:text-2xl font-semibold">
         OmitPlastic
       </Link>
       <div className="flex items-center gap-2 w-full sm:w-[400px] justify-end">
