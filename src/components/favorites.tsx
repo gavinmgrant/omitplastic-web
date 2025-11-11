@@ -85,6 +85,7 @@ const Favorites = () => {
               product={product as productType}
               isFavorite={favoriteProductIds.has(product.id)}
               onFavoriteChange={handleFavoriteChange}
+              isLoggedIn={user?.id ? true : false}
             />
           ))
         )}
