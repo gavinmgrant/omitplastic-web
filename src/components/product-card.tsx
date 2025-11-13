@@ -60,7 +60,7 @@ const ProductCard: FC<Props> = ({
               <div className="flex items-center gap-2 justify-end px-6">
                 {sources.map((source) => (
                   <Button key={source.id} className="">
-                    {source.price && `$${source.price}`}
+                    {source.price ? `$${source.price}` : `Buy from ${source.sourceName}`}
                   </Button>
                 ))}
               </div>
