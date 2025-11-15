@@ -43,21 +43,23 @@ const Product: FC<Props> = ({
           {imageUrl && (
             <div className="h-72 sm:h-96 sm:w-96 w-full">
               <div className="relative w-full h-72 sm:h-96 sm:w-96 aspect-square rounded-lg overflow-hidden">
-                <Image
-                  src={imageUrl}
-                  alt={name}
-                  width={384}
-                  height={384}
-                  loading="eager"
-                  className="w-full h-full object-contain"
-                />
+                {imageUrl && (
+                  <Image
+                    src={imageUrl}
+                    alt={name}
+                    width={384}
+                    height={384}
+                    loading="eager"
+                    className="w-full h-full object-contain"
+                  />
+                )}
               </div>
             </div>
           )}
 
           <div className="flex flex-col gap-6 lg:mt-4">
             <h1 className="text-4xl font-bold hidden lg:block">{name}</h1>
-            {description && (
+            {description ? (
               <p className="text-lg text-stone-700">
                 {descriptionExpanded || isShortDescription
                   ? description.trim()
@@ -72,6 +74,10 @@ const Product: FC<Props> = ({
                     {descriptionExpanded ? "Read less" : "Read more"}
                   </Button>
                 )}
+              </p>
+            ) : (
+              <p className="text-lg text-stone-700">
+                Product description coming soon.
               </p>
             )}
             {sources && sources.length > 0 && (

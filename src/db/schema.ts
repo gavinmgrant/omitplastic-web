@@ -40,8 +40,8 @@ export const products = pgTable("products", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
-  barcode: text("barcode").notNull().unique(),
-  description: text("description"),
+  barcode: text("barcode").unique(),
+  description: text("description").default("Product description coming soon."),
   imageUrl: text("image_url"),
   categoryId: uuid("category_id").references(() => categories.id, {
     onDelete: "set null",
@@ -62,7 +62,7 @@ export const sources = pgTable("sources", {
   affiliateTag: text("affiliate_tag"),
   price: numeric("price", { precision: 10, scale: 2 }),
   currency: text("currency").default("USD"),
-  availability: text("availability").default("in_stock"),
+  availability: text("availability").default("In Stock"),
   lastSynced: timestamp("last_synced").default(sql`now()`),
 })
 
@@ -80,3 +80,11 @@ export const favorites = pgTable(
   },
   (table) => [primaryKey({ columns: [table.userId, table.productId] })]
 )
+
+// ----- BRIGHTDATA SNAPSHOTS -----
+export const brightdataSnapshots = pgTable("brightdata_snapshots", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  snapshotId: text("snapshot_id").notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+})

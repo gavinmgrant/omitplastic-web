@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import SkeletonProductCards from "@/components/skeleton-product-cards"
 
-const PRODUCTS_PER_PAGE = 9
+const PRODUCTS_PER_PAGE = 12
 
 const Products: FC = () => {
   const [results, setResults] = useState<productType[]>([])

@@ -1,6 +1,7 @@
 import { FC } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { CircleQuestionMark } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -30,29 +31,35 @@ const ProductCard: FC<Props> = ({
   onFavoriteChange,
   isLoggedIn = false,
 }) => {
-  const { sources } = product
+  const { id, sources, slug, imageUrl, name, description } = product
 
   return (
     <div className="relative h-full">
-      <Link href={`/products/${product.slug}`}>
+      <Link href={`/products/${slug}`}>
         <Card className="h-full">
           <CardHeader>
-            <CardTitle>{product.name}</CardTitle>
+            <CardTitle>{name}</CardTitle>
           </CardHeader>
           <div className="flex flex-col justify-between h-full gap-6">
             <CardContent className="flex items-start gap-6">
               <div className="relative min-w-40 h-40 rounded-lg overflow-hidden">
-                <Image
-                  src={product.imageUrl || ""}
-                  alt={product.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  loading="eager"
-                  className="object-contain"
-                />
+                {imageUrl ? (
+                  <Image
+                    src={imageUrl}
+                    alt={name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    loading="eager"
+                    className="object-contain"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-stone-200 flex items-center justify-center">
+                    <CircleQuestionMark className="size-20 text-white" />
+                  </div>
+                )}
               </div>
               <CardDescription className="line-clamp-5">
-                {product.description}
+                {description ?? "Product description coming soon."}
               </CardDescription>
             </CardContent>
 
@@ -60,7 +67,9 @@ const ProductCard: FC<Props> = ({
               <div className="flex items-center gap-2 justify-end px-6">
                 {sources.map((source) => (
                   <Button key={source.id} className="">
-                    {source.price && `$${source.price}`}
+                    {source.price
+                      ? `$${source.price}`
+                      : `Buy from ${source.sourceName}`}
                   </Button>
                 ))}
               </div>
@@ -73,7 +82,7 @@ const ProductCard: FC<Props> = ({
         <TooltipTrigger asChild>
           <div className="z-10 absolute bottom-6 left-6">
             <FavoriteButton
-              productId={product.id}
+              productId={id}
               showText={false}
               isFavorite={isFavorite}
               onFavoriteChange={onFavoriteChange}
