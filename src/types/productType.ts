@@ -4,7 +4,7 @@ export type productType = {
   id: string
   name: string
   slug: string
-  barcode: string
+  barcode: string | null
   description?: string | null
   imageUrl?: string | null
   categoryId?: string | null
