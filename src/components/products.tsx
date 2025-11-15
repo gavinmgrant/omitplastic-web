@@ -135,7 +135,7 @@ const Products: FC = () => {
           ))
         )}
         {results.length === 0 && !isLoading && (
-          <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
+          <div className="flex items-center justify-center min-h-[calc(100vh-120px)] w-full absolute top-0 left-0 text-center">
             <p className="text-stone-700">
               No results found for &quot;
               <span className="font-semibold">{query}</span>&quot;, try again

@@ -34,11 +34,11 @@ export default function RootLayout({
             <Suspense fallback={<div className="h-12 w-full mb-4"></div>}>
               <Header />
             </Suspense>
-            <main className="min-h-[calc(100vh-80px)]">{children}</main>
+            <main className="min-h-[calc(100vh-120px)]">{children}</main>
           </StackTheme>
         </StackProvider>
         <footer className="text-center text-sm pt-6">
-          <p className="bg-white px-2.5 py-1.5 rounded-md text-xs relative z-10 max-w-fit mx-auto">
+          <p className="text-xs relative z-10 max-w-fit mx-auto">
             &copy; {new Date().getFullYear()}{" "}
             <a
               href="https://gavingrant.com"

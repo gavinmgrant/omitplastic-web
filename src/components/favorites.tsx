@@ -91,7 +91,7 @@ const Favorites = () => {
         )}
 
         {products.length === 0 && !isLoading && (
-          <div className="flex items-center justify-center min-h-[calc(100vh-80px)] w-full absolute top-0 left-0 text-center">
+          <div className="flex items-center justify-center min-h-[calc(100vh-120px)] w-full absolute top-0 left-0 text-center">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <p>No favorites found.</p>
