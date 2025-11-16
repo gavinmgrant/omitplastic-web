@@ -6,7 +6,6 @@ import { productType } from "@/types"
 import ProductCard from "@/components/product-card"
 import { searchProducts, type PaginatedResult } from "@/actions/searchAction"
 import { getFavoritesByUserId } from "@/actions/favoriteAction"
-import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import SkeletonProductCards from "@/components/skeleton-product-cards"
 
@@ -100,6 +99,26 @@ const Products: FC = () => {
     setIsLoadingMore(false)
   }
 
+  useEffect(() => {
+    const sentinel = document.getElementById("scroll-sentinel")
+    if (!sentinel) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0]
+        if (first.isIntersecting && hasMore && !isLoadingMore) {
+          handleLoadMore()
+        }
+      },
+      { rootMargin: "200px" } // start loading before hitting bottom
+    )
+
+    observer.observe(sentinel)
+
+    return () => observer.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, isLoadingMore])
+
   return (
     <>
       <div className="pb-4 text-sm">
@@ -144,21 +163,13 @@ const Products: FC = () => {
           </div>
         )}
       </div>
-      {hasMore && (
-        <div className="flex justify-center mt-8">
-          <Button
-            onClick={handleLoadMore}
-            disabled={isLoadingMore}
-            variant="outline"
-          >
-            {isLoadingMore ? (
-              <div className="flex items-center justify-center gap-2">
-                <Spinner className="size-4" /> Loading...
-              </div>
-            ) : (
-              "Load More"
-            )}
-          </Button>
+      {hasMore && <div id="scroll-sentinel" className="h-10"></div>}
+      {isLoadingMore && (
+        <div className="h-10 flex items-center justify-center">
+          <div className="flex items-center justify-center gap-2">
+            <Spinner className="w-6 h-6" />
+            <p>Loading...</p>
+          </div>
         </div>
       )}
     </>
