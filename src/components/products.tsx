@@ -126,13 +126,11 @@ const Products: FC = () => {
           <div>
             {query ? (
               <p>
-                Showing {results.length} of {totalResults} results for &quot;
+                Showing {totalResults} results for &quot;
                 <span className="font-semibold">{query}</span>&quot;
               </p>
             ) : (
-              <p>
-                Showing {results.length} of {totalResults} products
-              </p>
+              <p>Showing all {totalResults} products</p>
             )}
           </div>
         ) : (
