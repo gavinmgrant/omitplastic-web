@@ -6,6 +6,7 @@ import { Lexend } from "next/font/google"
 import Header from "@/components/header"
 import { cn } from "@/lib/utils"
 import "./globals.css"
+import SearchInput from "@/components/search-input"
 
 const lexend = Lexend({
   variable: "--font-lexend",
@@ -27,17 +28,19 @@ export default function RootLayout({
   return (
     <html lang="en" className="overscroll-none">
       <body
-        className={cn("px-4 pb-4 relative", lexend.className)}
+        className={cn("relative w-screen overflow-x-hidden", lexend.className)}
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>
             <Suspense fallback={<div className="h-12 w-full mb-4"></div>}>
               <Header />
             </Suspense>
-            <main className="min-h-[calc(100vh-120px)]">{children}</main>
+            <main className="min-h-[calc(100vh-64px)] px-4 pb-4 pt-16">
+              {children}
+            </main>
           </StackTheme>
         </StackProvider>
-        <footer className="text-center text-sm pt-6">
+        <footer className="text-center text-sm py-6 px-4">
           <p className="text-xs relative z-10 max-w-fit mx-auto">
             &copy; {new Date().getFullYear()}{" "}
             <a

@@ -1,8 +1,9 @@
 "use server"
-import { ilike, or, inArray, sql, asc, desc } from "drizzle-orm"
+import { ilike, or, inArray, sql, asc, desc, eq, and, SQL } from "drizzle-orm"
 import { db } from "@/db/drizzle"
 import { products, sources } from "@/db/schema"
 import { productType, sourceType } from "@/types"
+import { categories } from "@/config/categories"
 
 export interface SearchPaginationOptions {
   page?: number
@@ -22,21 +23,50 @@ export interface PaginatedResult<T> {
   }
 }
 
-const getSearchProductsCount = async (query: string): Promise<number> => {
-  const result = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(products)
-    .where(
+export interface SearchConditions {
+  query: string
+  categorySlug: string | undefined
+}
+
+const getSearchProductsCount = async (
+  query: string,
+  categorySlug: string | undefined
+): Promise<number> => {
+  const conditions = []
+
+  // Add query condition if query exists
+  if (query && query.trim()) {
+    conditions.push(
       or(
         ilike(products.name, `%${query}%`),
         ilike(products.description, `%${query}%`)
       )
     )
+  }
+
+  // Add category condition if category exists and is not "all"
+  if (categorySlug && categorySlug !== "all") {
+    conditions.push(
+      eq(
+        products.categoryId,
+        categories[categorySlug as keyof typeof categories] as string
+      )
+    )
+  }
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined
+
+  const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(products)
+    .where(whereClause as unknown as SQL<SearchConditions>)
+
   return Number(result[0]?.count || 0)
 }
 
 export const searchProducts = async (
   query: string,
+  categorySlug: string | undefined,
   options?: SearchPaginationOptions
 ): Promise<productType[] | PaginatedResult<productType>> => {
   const {
@@ -46,22 +76,56 @@ export const searchProducts = async (
     orderDirection = "asc",
   } = options || {}
 
-  const searchCondition = or(
-    ilike(products.name, `%${query}%`),
-    ilike(products.description, `%${query}%`)
-  )
+  // Build search conditions dynamically
+  const conditions = []
+
+  // Add query condition if query exists
+  if (query && query.trim()) {
+    conditions.push(
+      or(
+        ilike(products.name, `%${query}%`),
+        ilike(products.description, `%${query}%`)
+      )
+    )
+  }
+
+  // Add category condition if category exists and is not "all"
+  if (categorySlug && categorySlug !== "all") {
+    conditions.push(
+      eq(
+        products.categoryId,
+        categories[categorySlug as keyof typeof categories] as string
+      )
+    )
+  }
+
+  const searchCondition =
+    conditions.length > 0
+      ? (and(...conditions) as unknown as SQL<SearchConditions>)
+      : undefined
 
   if (!limit) {
-    const data = await db.select().from(products).where(searchCondition)
-
-    const sourcesData = await db.select().from(sources)
+    const data = (await db
+      .select()
+      .from(products)
+      .where(
+        searchCondition as unknown as SQL<SearchConditions>
+      )) as productType[]
+    const sourcesData = await db
+      .select()
+      .from(sources)
+      .where(
+        inArray(
+          sources.productId,
+          data.map((p) => p.id)
+        )
+      )
 
     data.forEach((product: productType) => {
       product.sources = sourcesData.filter(
         (source: sourceType) => source.productId === product.id
       )
     })
-
     data.sort((a, b) => {
       const categoryA = a.categoryId || ""
       const categoryB = b.categoryId || ""
@@ -84,13 +148,13 @@ export const searchProducts = async (
   const data = await db
     .select()
     .from(products)
-    .where(searchCondition)
-    .orderBy(orderFn(orderByColumn))
-    .limit(limit)
+    .where(searchCondition as unknown as SQL<SearchConditions>)
+    .orderBy(orderFn(orderByColumn) as unknown as SQL<SearchConditions>)
+    .limit(limit as number)
     .offset(offset)
 
   if (data.length === 0) {
-    const total = await getSearchProductsCount(query)
+    const total = await getSearchProductsCount(query, categorySlug)
     return {
       data: [],
       pagination: {
@@ -116,7 +180,7 @@ export const searchProducts = async (
     ),
   })) as productType[]
 
-  const total = await getSearchProductsCount(query)
+  const total = await getSearchProductsCount(query, categorySlug)
 
   return {
     data: productsWithSources,

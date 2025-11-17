@@ -14,25 +14,25 @@ const Header = () => {
   const user = useUser()
 
   return (
-    <header className="p-4 flex items-center justify-between gap-4 sticky top-0 left-4 right-4 z-50 -mx-4 backdrop-blur-md">
+    <header className="p-4 -mx-4 flex items-center justify-between gap-4 fixed top-0 left-4 right-4 z-50 backdrop-blur-md">
       <Link href="/" className="text-xl sm:text-2xl font-semibold">
         OmitPlastic
       </Link>
-      <div className="flex items-center gap-2 w-full sm:w-[400px] justify-end">
-        <div className="w-full! sm:w-[300px]">
+      <div className="flex items-center gap-2 sm:gap-3 w-full md:w-[400px] justify-end">
+        <div className="hidden sm:block w-full md:w-[300px]">
           <SearchInput />
         </div>
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link href="/products" className="hidden md:block">
+            <Link href="/products">
               <Button variant="outline" size="sm">
                 <Layers className="size-4" />
               </Button>
             </Link>
           </TooltipTrigger>
           <TooltipContent>
-            <p>All Products</p>
+            <p>Products</p>
           </TooltipContent>
         </Tooltip>
 

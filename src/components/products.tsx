@@ -1,13 +1,22 @@
 "use client"
 import { FC, useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useUser } from "@stackframe/stack"
 import { productType } from "@/types"
 import ProductCard from "@/components/product-card"
 import { searchProducts, type PaginatedResult } from "@/actions/searchAction"
 import { getFavoritesByUserId } from "@/actions/favoriteAction"
 import { Spinner } from "@/components/ui/spinner"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { categoryOptions } from "@/config/categories"
 import SkeletonProductCards from "@/components/skeleton-product-cards"
+import SearchInput from "./search-input"
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -22,8 +31,27 @@ const Products: FC = () => {
     new Set()
   )
   const searchParams = useSearchParams()
+  const router = useRouter()
   const query = searchParams.get("q")
+  const categorySlug = searchParams.get("category")
   const user = useUser()
+
+  const handleCategoryChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (value === "all") {
+      params.delete("category")
+      params.delete("q")
+      router.push("/products")
+    } else {
+      params.set("category", value)
+    }
+
+    // Reset to page 1 when category changes
+    params.delete("page")
+
+    router.push(`/products?${params.toString()}`)
+  }
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -48,10 +76,14 @@ const Products: FC = () => {
     const fetchResults = async () => {
       setIsLoading(true)
       setCurrentPage(1)
-      const result = await searchProducts(query || "", {
-        page: 1,
-        limit: PRODUCTS_PER_PAGE,
-      })
+      const result = await searchProducts(
+        query || "",
+        categorySlug || undefined,
+        {
+          page: 1,
+          limit: PRODUCTS_PER_PAGE,
+        }
+      )
 
       if (result && "pagination" in result) {
         const paginatedResult = result as PaginatedResult<productType>
@@ -66,7 +98,7 @@ const Products: FC = () => {
       setIsLoading(false)
     }
     fetchResults()
-  }, [query])
+  }, [query, categorySlug])
 
   const handleFavoriteChange = (productId: string, isFavorite: boolean) => {
     setFavoriteProductIds((prev) => {
@@ -85,10 +117,14 @@ const Products: FC = () => {
 
     setIsLoadingMore(true)
     const nextPage = currentPage + 1
-    const result = await searchProducts(query || "", {
-      page: nextPage,
-      limit: PRODUCTS_PER_PAGE,
-    })
+    const result = await searchProducts(
+      query || "",
+      categorySlug || undefined,
+      {
+        page: nextPage,
+        limit: PRODUCTS_PER_PAGE,
+      }
+    )
 
     if (result && "pagination" in result) {
       const paginatedResult = result as PaginatedResult<productType>
@@ -121,13 +157,28 @@ const Products: FC = () => {
 
   return (
     <>
-      <div className="pb-4 text-sm">
+      <div className="pb-4 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         {results.length > 0 && !isLoading ? (
           <div>
-            {query ? (
+            {query && categorySlug && categorySlug !== "all" ? (
+              <p>
+                Showing {totalResults} results for &quot;
+                <span className="font-semibold">{query}</span>&quot; in{" "}
+                <span className="font-semibold">
+                  {categoryOptions.find((c) => c.value === categorySlug)?.label}
+                </span>
+              </p>
+            ) : query ? (
               <p>
                 Showing {totalResults} results for &quot;
                 <span className="font-semibold">{query}</span>&quot;
+              </p>
+            ) : categorySlug && categorySlug !== "all" ? (
+              <p>
+                Showing {totalResults} products in{" "}
+                <span className="font-semibold">
+                  {categoryOptions.find((c) => c.value === categorySlug)?.label}
+                </span>
               </p>
             ) : (
               <p>Showing all {totalResults} products</p>
@@ -136,7 +187,28 @@ const Products: FC = () => {
         ) : (
           <div className="h-5">{isLoading && "Loading products..."}</div>
         )}
+
+        <div className="block sm:hidden py-2 w-full">
+          <SearchInput expanded />
+        </div>
+
+        <Select
+          value={categorySlug || "all"}
+          onValueChange={handleCategoryChange}
+        >
+          <SelectTrigger className="w-full sm:w-[188px]">
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent position="popper" sideOffset={2}>
+            {categoryOptions.map((category) => (
+              <SelectItem key={category.value} value={category.value}>
+                {category.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+
       <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
         {isLoading ? (
           <SkeletonProductCards />
@@ -152,15 +224,45 @@ const Products: FC = () => {
           ))
         )}
         {results.length === 0 && !isLoading && (
-          <div className="flex items-center justify-center min-h-[calc(100vh-120px)] w-full absolute top-0 left-0 text-center">
-            <p className="text-stone-700">
-              No results found for &quot;
-              <span className="font-semibold">{query}</span>&quot;, try again
-              with a different query.
+          <div className="flex items-center justify-center min-h-[calc(100vh-128px)] w-full absolute top-0 left-0 text-center">
+            <p className="text-stone-700 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              {query && categorySlug && categorySlug !== "all" ? (
+                <>
+                  No results found for &quot;
+                  <span className="font-semibold">{query}</span>&quot; in{" "}
+                  <span className="font-semibold">
+                    {
+                      categoryOptions.find((c) => c.value === categorySlug)
+                        ?.label
+                    }
+                  </span>
+                  . Try a different query or category.
+                </>
+              ) : query ? (
+                <>
+                  No results found for &quot;
+                  <span className="font-semibold">{query}</span>&quot;. Try
+                  again with a different query.
+                </>
+              ) : categorySlug && categorySlug !== "all" ? (
+                <>
+                  No products found in{" "}
+                  <span className="font-semibold">
+                    {
+                      categoryOptions.find((c) => c.value === categorySlug)
+                        ?.label
+                    }
+                  </span>
+                  . Try selecting a different category.
+                </>
+              ) : (
+                "No products found."
+              )}
             </p>
           </div>
         )}
       </div>
+
       {hasMore && <div id="scroll-sentinel" className="h-10"></div>}
       {isLoadingMore && (
         <div className="h-10 flex items-center justify-center">

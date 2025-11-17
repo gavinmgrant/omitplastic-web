@@ -36,7 +36,7 @@ const Product: FC<Props> = ({
   }
 
   return (
-    <div className="min-h-[calc(100vh-120px)] flex items-center justify-center">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
       <div className="w-full space-y-6 max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold block lg:hidden">{name}</h1>
         <div className="w-full flex flex-col lg:flex-row items-center gap-6 lg:gap-16 relative">

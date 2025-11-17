@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -14,7 +14,7 @@ interface SearchInputProps {
 
 const SearchInput = ({
   expanded = false,
-  disableExpand = false,  
+  disableExpand = false,
   placeholder = "Search",
   padding = "px-4 py-3.5",
 }: SearchInputProps) => {
@@ -22,13 +22,16 @@ const SearchInput = ({
   const [query, setQuery] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const handleSearch = () => {
     if (!query.trim() && !disableExpand) {
       setIsExpanded(!isExpanded)
     } else {
-      router.push(`/products?q=${query}`)
-      setQuery("")
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("q", query)
+      // Preserve category param if it exists
+      router.push(`/products?${params.toString()}`)
     }
   }
 
@@ -37,6 +40,14 @@ const SearchInput = ({
       inputRef.current?.focus()
     }
   }, [isExpanded])
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!searchParams.get("q")) {
+        setQuery("")
+      }
+    }, 0)
+  }, [searchParams])
 
   return (
     <form
@@ -56,7 +67,7 @@ const SearchInput = ({
         className={cn(isExpanded ? "block" : "hidden", padding)}
       />
       <Search
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4.5 h-4.5 cursor-pointer"
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4.5 h-4.5 cursor-pointer"
         onClick={handleSearch}
       />
     </form>

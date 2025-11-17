@@ -65,14 +65,16 @@ const Favorites = () => {
 
   return (
     <>
-      <div className="pb-4 text-sm">
+      <div className="pb-4 text-sm h-12 flex items-center justify-start">
         {isLoading ? (
           <p>Loading favorites...</p>
         ) : (
-          <p>
-            Your {products.length}{" "}
-            {favorites.length > 1 ? "favorites" : "favorite"}
-          </p>
+          favorites.length > 0 && (
+            <p>
+              Your {products.length}{" "}
+              {favorites.length > 1 ? "favorites" : "favorite"}
+            </p>
+          )
         )}
       </div>
       <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
@@ -91,8 +93,8 @@ const Favorites = () => {
         )}
 
         {products.length === 0 && !isLoading && (
-          <div className="flex items-center justify-center min-h-[calc(100vh-120px)] w-full absolute top-0 left-0 text-center">
-            <div className="space-y-4">
+          <div className="flex items-center justify-center min-h-[calc(100vh-128px)] w-full absolute top-0 left-0 text-center">
+            <div className="space-y-4 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <div className="flex items-center gap-2">
                 <p>No favorites found.</p>
                 <Frown className="size-6" />
