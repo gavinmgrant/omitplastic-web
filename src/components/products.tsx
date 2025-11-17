@@ -20,7 +20,7 @@ import SkeletonProductCards from "@/components/skeleton-product-cards"
 import SearchInput from "./search-input"
 import { Button } from "./ui/button"
 
-const PRODUCTS_PER_PAGE = 12
+const PRODUCTS_PER_PAGE = 24
 
 const Products: FC = () => {
   const [results, setResults] = useState<productType[]>([])
