@@ -6,7 +6,6 @@ import { Lexend } from "next/font/google"
 import Header from "@/components/header"
 import { cn } from "@/lib/utils"
 import "./globals.css"
-import SearchInput from "@/components/search-input"
 
 const lexend = Lexend({
   variable: "--font-lexend",
@@ -15,9 +14,9 @@ const lexend = Lexend({
 })
 
 export const metadata: Metadata = {
-  title: "OmitPlastic",
+  title: "OmitPlastic - Buying less plastic means less plastic waste",
   description:
-    "Find plastic free products and those with plastic free packaging",
+    "Buying less plastic means less plastic waste. Find products that use less or no plastic. Search by keyword or select a category to get started.",
 }
 
 export default function RootLayout({
