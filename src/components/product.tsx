@@ -87,7 +87,7 @@ const Product: FC<Props> = ({
                 ))}
               </div>
             )}
-            <div className="w-full sm:w-52 flex items-center justify-start">
+            <div className="w-full sm:w-60 flex items-center justify-start">
               <FavoriteButton
                 productId={id}
                 isFavorite={isFavorite}
