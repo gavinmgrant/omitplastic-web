@@ -1,6 +1,7 @@
 "use client"
 import { FC, useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
+import Link from "next/link"
 import { useUser } from "@stackframe/stack"
 import { productType } from "@/types"
 import ProductCard from "@/components/product-card"
@@ -17,6 +18,7 @@ import {
 import { categoryOptions } from "@/config/categories"
 import SkeletonProductCards from "@/components/skeleton-product-cards"
 import SearchInput from "./search-input"
+import { Button } from "./ui/button"
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -225,40 +227,45 @@ const Products: FC = () => {
         )}
         {results.length === 0 && !isLoading && (
           <div className="flex items-center justify-center min-h-[calc(100vh-128px)] w-full absolute top-0 left-0 text-center">
-            <p className="text-stone-700 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              {query && categorySlug && categorySlug !== "all" ? (
-                <>
-                  No results found for &quot;
-                  <span className="font-semibold">{query}</span>&quot; in{" "}
-                  <span className="font-semibold">
-                    {
-                      categoryOptions.find((c) => c.value === categorySlug)
-                        ?.label
-                    }
-                  </span>
-                  . Try a different query or category.
-                </>
-              ) : query ? (
-                <>
-                  No results found for &quot;
-                  <span className="font-semibold">{query}</span>&quot;. Try
-                  again with a different query.
-                </>
-              ) : categorySlug && categorySlug !== "all" ? (
-                <>
-                  No products found in{" "}
-                  <span className="font-semibold">
-                    {
-                      categoryOptions.find((c) => c.value === categorySlug)
-                        ?.label
-                    }
-                  </span>
-                  . Try selecting a different category.
-                </>
-              ) : (
-                "No products found."
-              )}
-            </p>
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 space-y-4">
+              <p className="text-stone-700">
+                {query && categorySlug && categorySlug !== "all" ? (
+                  <>
+                    No results found for &quot;
+                    <span className="font-semibold">{query}</span>&quot; in{" "}
+                    <span className="font-semibold">
+                      {
+                        categoryOptions.find((c) => c.value === categorySlug)
+                          ?.label
+                      }
+                    </span>
+                    . Try a different query or category.
+                  </>
+                ) : query ? (
+                  <>
+                    No results found for &quot;
+                    <span className="font-semibold">{query}</span>&quot;. Try
+                    again with a different query.
+                  </>
+                ) : categorySlug && categorySlug !== "all" ? (
+                  <>
+                    No products found in{" "}
+                    <span className="font-semibold">
+                      {
+                        categoryOptions.find((c) => c.value === categorySlug)
+                          ?.label
+                      }
+                    </span>
+                    . Try selecting a different category.
+                  </>
+                ) : (
+                  "No products found."
+                )}
+              </p>
+              <Link href="/products">
+                <Button>View All Products</Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>
