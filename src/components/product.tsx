@@ -39,16 +39,16 @@ const Product: FC<Props> = ({
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
       <div className="w-full space-y-6 max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold block lg:hidden">{name}</h1>
-        <div className="w-full flex flex-col lg:flex-row items-center gap-6 lg:gap-16 relative">
+        <div className="w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-14 relative">
           {imageUrl && (
-            <div className="h-72 sm:h-96 sm:w-96 w-full">
-              <div className="relative w-full h-72 sm:h-96 sm:w-96 aspect-square rounded-lg overflow-hidden">
+            <div className="h-82 sm:h-108 sm:w-108 w-full shrink-0">
+              <div className="relative w-full h-82 sm:h-108 sm:w-108 aspect-square rounded-lg overflow-hidden">
                 {imageUrl && (
                   <Image
                     src={imageUrl}
                     alt={name}
-                    width={384}
-                    height={384}
+                    width={432}
+                    height={432}
                     loading="eager"
                     className="w-full h-full object-contain"
                   />
