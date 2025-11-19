@@ -21,6 +21,8 @@ const LeafScore = ({ score, size = "sm" }: LeafScoreProps) => {
             key={index}
             className={cn(size === "sm" ? "size-4" : "size-5", color[index])}
             strokeWidth={3.5}
+            fillOpacity={score >= index + 1 ? 0.5 : 0}
+            fill={score >= index + 1 ? "green" : "none"}
           />
         ))}
       </div>

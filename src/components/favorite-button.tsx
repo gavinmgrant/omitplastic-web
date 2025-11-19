@@ -67,6 +67,8 @@ const FavoriteButton = ({
           className="size-4"
           fill={isFavorite ? "red" : "none"}
           stroke="red"
+          fillOpacity={isFavorite ? 0.5 : 0}
+          strokeWidth={3.5}
         />
       )}
       {showText &&
