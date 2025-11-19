@@ -14,11 +14,6 @@ export const getProducts = async () => {
     )
   })
 
-  data.sort((a, b) => {
-    const categoryA = a.categoryId || ""
-    const categoryB = b.categoryId || ""
-    return categoryA.localeCompare(categoryB)
-  })
   return data as productType[]
 }
 

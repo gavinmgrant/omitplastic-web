@@ -4,7 +4,7 @@ const SkeletonProductCards = () => {
     <>
       {cards.map((card) => (
         <div key={card} className="animate-pulse">
-          <div className="h-[318px] w-full bg-gray-200 rounded-xl"></div>
+          <div className="h-[350px] w-full bg-gray-200 rounded-xl"></div>
         </div>
       ))}
     </>

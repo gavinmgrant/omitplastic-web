@@ -8,7 +8,7 @@ import { categories } from "@/config/categories"
 export interface SearchPaginationOptions {
   page?: number
   limit?: number
-  orderBy?: "categoryId" | "name" | "createdAt"
+  orderBy?: "plasticScore" | "categoryId" | "name" | "createdAt"
   orderDirection?: "asc" | "desc"
 }
 
@@ -72,8 +72,8 @@ export const searchProducts = async (
   const {
     page = 1,
     limit,
-    orderBy = "categoryId",
-    orderDirection = "asc",
+    orderBy = "plasticScore",
+    orderDirection = "desc",
   } = options || {}
 
   // Build search conditions dynamically
@@ -126,18 +126,15 @@ export const searchProducts = async (
         (source: sourceType) => source.productId === product.id
       )
     })
-    data.sort((a, b) => {
-      const categoryA = a.categoryId || ""
-      const categoryB = b.categoryId || ""
-      return categoryA.localeCompare(categoryB)
-    })
     return data as productType[]
   }
 
   const offset = (page - 1) * limit
 
   const orderByColumn =
-    orderBy === "name"
+    orderBy === "plasticScore"
+      ? products.plasticScore
+      : orderBy === "name"
       ? products.name
       : orderBy === "createdAt"
       ? products.createdAt

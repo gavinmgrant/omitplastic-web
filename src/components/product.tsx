@@ -1,10 +1,12 @@
 "use client"
-import { FC, useState } from "react"
+import { FC } from "react"
 import { productType } from "@/types"
 import Image from "next/image"
 import BuyButton from "@/components/buy-button"
 import FavoriteButton from "@/components/favorite-button"
-import { Button } from "@/components/ui/button"
+import LeafScore from "@/components/leaf-score"
+import ProductDescriptionDialog from "@/components/product-description-dialog"
+import { sourceType } from "@/types/sourceType"
 
 const DESCRIPTION_MAX_LENGTH = 480
 
@@ -19,8 +21,7 @@ const Product: FC<Props> = ({
   isFavorite = false,
   onFavoriteChange,
 }) => {
-  const { id, sources, name, description, imageUrl } = product
-  const [descriptionExpanded, setDescriptionExpanded] = useState(false)
+  const { id, sources, name, description, imageUrl, plasticScore } = product
   const isShortDescription =
     description && description.length < DESCRIPTION_MAX_LENGTH
 
@@ -30,9 +31,9 @@ const Product: FC<Props> = ({
       .slice(0, DESCRIPTION_MAX_LENGTH)
     const lastSpaceIndex = shortenedDescription.lastIndexOf(" ")
     if (lastSpaceIndex !== -1) {
-      return shortenedDescription.slice(0, lastSpaceIndex) + " ..."
+      return shortenedDescription.slice(0, lastSpaceIndex) + "..."
     }
-    return shortenedDescription + " ..."
+    return shortenedDescription + "..."
   }
 
   return (
@@ -58,25 +59,24 @@ const Product: FC<Props> = ({
           )}
 
           <div className="flex flex-col gap-6 lg:mt-4">
-            <h1 className="text-4xl font-bold hidden lg:block">{name}</h1>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold hidden lg:block">{name}</h1>
+              <LeafScore score={plasticScore ?? 1} size="lg" />
+            </div>
             {description ? (
-              <p className="text-lg text-stone-700">
-                {descriptionExpanded || isShortDescription
-                  ? description.trim()
-                  : truncateDescription(description)}
+              <p className="text-muted-foreground">
+                {truncateDescription(description)}
+
                 {!isShortDescription && (
-                  <Button
-                    className="ml-2"
-                    variant="link"
-                    size="sm"
-                    onClick={() => setDescriptionExpanded(!descriptionExpanded)}
-                  >
-                    {descriptionExpanded ? "Read less" : "Read more"}
-                  </Button>
+                  <ProductDescriptionDialog
+                    name={name}
+                    description={description}
+                    source={sources?.[0] ?? ({} as sourceType)}
+                  />
                 )}
               </p>
             ) : (
-              <p className="text-lg text-stone-700">
+              <p className="text-muted-foreground">
                 Product description coming soon.
               </p>
             )}
@@ -87,7 +87,7 @@ const Product: FC<Props> = ({
                 ))}
               </div>
             )}
-            <div className="w-full sm:w-60 flex items-center justify-start">
+            <div className="flex items-center justify-start">
               <FavoriteButton
                 productId={id}
                 isFavorite={isFavorite}

@@ -40,7 +40,13 @@ const Favorites = () => {
             .map((f) => f.productId)
             .filter((id): id is string => id !== null && id !== undefined)
           const productsData = await getProductsByIds(productIds)
-          setProducts(productsData)
+          const sortedProductsData = productsData.sort((a, b) => {
+            return (
+              (b.createdAt ?? new Date()).getTime() -
+              (a.createdAt ?? new Date()).getTime()
+            )
+          })
+          setProducts(sortedProductsData)
         } else {
           setProducts([])
         }

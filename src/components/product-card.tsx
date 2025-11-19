@@ -17,6 +17,7 @@ import {
 import FavoriteButton from "@/components/favorite-button"
 import { productType } from "@/types"
 import { Button } from "./ui/button"
+import LeafScore from "./leaf-score"
 
 interface Props {
   product: productType
@@ -31,7 +32,8 @@ const ProductCard: FC<Props> = ({
   onFavoriteChange,
   isLoggedIn = false,
 }) => {
-  const { id, sources, slug, imageUrl, name, description } = product
+  const { id, sources, slug, imageUrl, name, description, plasticScore } =
+    product
 
   return (
     <div className="relative h-full">
@@ -39,6 +41,7 @@ const ProductCard: FC<Props> = ({
         <Card className="h-full">
           <CardHeader>
             <CardTitle>{name}</CardTitle>
+            <LeafScore score={plasticScore ?? 1} />
           </CardHeader>
           <div className="flex flex-col justify-between h-full gap-6">
             <CardContent className="flex items-start gap-6">

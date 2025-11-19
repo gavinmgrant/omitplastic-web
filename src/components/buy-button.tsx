@@ -1,12 +1,22 @@
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { sourceType } from "@/types/sourceType"
+import { cn } from "@/lib/utils"
 
-const BuyButton = ({ source }: { source: sourceType }) => {
+interface Props {
+  source: sourceType
+  justify?: "left" | "right"
+}
+
+const BuyButton = ({ source, justify = "left" }: Props) => {
   return (
     <div className="w-full sm:w-auto">
-      <div className="flex sm:flex-row flex-col items-center gap-4">
+      <div
+        className={cn(
+          "flex flex-col gap-2 items-center",
+          justify === "right" ? "sm:items-end" : "sm:items-start"
+        )}
+      >
         <Link
           href={source.sourceUrl || ""}
           className="w-full sm:w-auto"
@@ -17,10 +27,15 @@ const BuyButton = ({ source }: { source: sourceType }) => {
             Buy from {source.sourceName} {source.price && `$${source.price}`}
           </Button>
         </Link>
-        <Badge variant="outline">{source.availability}</Badge>
+        <p className="text-sm text-muted-foreground">{source.availability}</p>
       </div>
       {source.sourceName === "Amazon" && (
-        <p className="text-sm text-stone-700 mt-4">
+        <p
+          className={cn(
+            "text-xs text-muted-foreground mt-1 text-center",
+            justify === "right" ? "sm:text-right" : "sm:text-left"
+          )}
+        >
           When you buy this product using our links, we may earn an affiliate
           commission.
         </p>

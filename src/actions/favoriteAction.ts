@@ -15,7 +15,9 @@ export const checkIfFavorite = async (userId: string, productId: string) => {
   const data = await db
     .select()
     .from(favorites)
-    .where(and(eq(favorites.userId, userId), eq(favorites.productId, productId)))
+    .where(
+      and(eq(favorites.userId, userId), eq(favorites.productId, productId))
+    )
   return data.length > 0
 }
 

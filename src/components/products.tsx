@@ -228,7 +228,7 @@ const Products: FC = () => {
         {results.length === 0 && !isLoading && (
           <div className="flex items-center justify-center min-h-[calc(100vh-128px)] w-full absolute top-0 left-0 text-center">
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 space-y-4">
-              <p className="text-stone-700">
+              <p className="text-muted-foreground">
                 {query && categorySlug && categorySlug !== "all" ? (
                   <>
                     No results found for &quot;

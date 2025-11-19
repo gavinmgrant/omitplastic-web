@@ -33,7 +33,7 @@ export default async function Home() {
                     <Link
                       key={category.value}
                       href={`/products?category=${category.value}`}
-                      className="text-sm text-stone-700"
+                      className="text-sm text-muted-foreground"
                     >
                       <Button variant="outline" size="sm">
                         {category.label}
