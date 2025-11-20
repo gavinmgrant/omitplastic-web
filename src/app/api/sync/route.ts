@@ -13,7 +13,6 @@ interface BrightDataResult {
   final_price?: string | number
   availability?: string
   description?: string
-  product_description?: string
   image_url?: string
   upc?: string
   error?: string
@@ -26,7 +25,6 @@ interface ProcessedResult {
   availability: string
   asin?: string
   description?: string
-  productDescription?: string
   imageUrl?: string
   barcode?: string
   success: boolean
@@ -276,15 +274,6 @@ async function processSnapshot(
         processedResult.description = descr.trim() || undefined
       }
 
-      // Process product description
-      if (
-        result.product_description &&
-        typeof result.product_description === "string"
-      ) {
-        processedResult.productDescription =
-          result.product_description.trim() || undefined
-      }
-
       // Process image URL
       if (result.image_url && typeof result.image_url === "string") {
         processedResult.imageUrl = result.image_url.trim() || undefined
@@ -331,8 +320,6 @@ async function processSnapshot(
               processedResult.description.length > 20
             ) {
               productUpdates.description = processedResult.description
-            } else {
-              productUpdates.description = processedResult.productDescription
             }
 
             if (processedResult.imageUrl) {
