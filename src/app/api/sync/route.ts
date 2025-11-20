@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server"
 import { db } from "@/db/drizzle"
 import { products, sources, brightdataSnapshots } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { eq, desc } from "drizzle-orm"
 
-// Simple two-phase approach:
-// Phase 1: Initiate scrape (returns immediately with snapshot ID)
-// Phase 2: Fetch and process results (call with ?snapshot_id=xxx)
+// This is the second phase of the two-phase approach to scrape Amazon product data.
+// It fetches the snapshot results and processes them.
 
 // Type definitions for BrightData API responses
-interface BrightDataScrapeResponse {
-  snapshot_id: string
-  [key: string]: unknown
-}
 
 interface BrightDataResult {
   asin?: string
@@ -113,146 +108,28 @@ export async function GET(request: Request) {
   }
 
   const startTime = Date.now()
-  const url = new URL(request.url)
-  const snapshotId = url.searchParams.get("snapshot_id")
 
-  // Phase 2: Check and process snapshot results
-  if (snapshotId) {
-    return await processSnapshot(snapshotId, startTime)
-  }
+  // Get the most recent snapshot ID
+  const snapshots = await db
+    .select()
+    .from(brightdataSnapshots)
+    .orderBy(desc(brightdataSnapshots.createdAt))
+    .limit(1)
 
-  // Phase 1: Initiate scrape
-  try {
-    // Validate environment variables
-    const apiKey = process.env.BRIGHTDATA_API_KEY
-    const datasetId = process.env.BRIGHTDATA_DATASET_ID
-
-    if (!apiKey) {
-      throw new Error("BRIGHTDATA_API_KEY is not set")
-    }
-
-    if (!datasetId) {
-      throw new Error("BRIGHTDATA_DATASET_ID is not set")
-    }
-
-    // Fetch Amazon sources
-    const amazonSources = await db
-      .select()
-      .from(sources)
-      .where(eq(sources.sourceName, "Amazon"))
-
-    if (!amazonSources.length) {
-      console.log("[Sync] No Amazon sources found")
-      return NextResponse.json({ message: "No Amazon sources found." })
-    }
-
-    console.log(
-      `[Sync] Starting sync for ${amazonSources.length} Amazon sources`
-    )
-
-    // Filter out sources without affiliate tags
-    const validSources = amazonSources.filter(
-      (source) => source.affiliateTag && source.affiliateTag.trim() !== ""
-    )
-
-    if (validSources.length === 0) {
-      throw new Error("No valid Amazon sources with affiliate tags found")
-    }
-
-    if (validSources.length < amazonSources.length) {
-      console.warn(
-        `[Sync] Filtered out ${
-          amazonSources.length - validSources.length
-        } sources without affiliate tags`
-      )
-    }
-
-    const customOutputFields =
-      "final_price%2Cdescription%2Cavailability%2Casin%2Cimage_url%2Cupc"
-
-    const amazonUrls = validSources.map((source) => ({
-      url: `https://www.amazon.com/dp/${source.affiliateTag}`,
-      zipcode: "92110",
-      language: "EN",
-    }))
-
-    // Initiate scrape (single call, no retries)
-    console.log(`[Sync] Calling BrightData API to initiate scrape...`)
-
-    let scrapeResponse: Response
-    try {
-      scrapeResponse = await fetch(
-        `https://api.brightdata.com/datasets/v3/scrape?dataset_id=${datasetId}&custom_output_fields=${customOutputFields}&notify=false&include_errors=true`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ input: amazonUrls }),
-          signal: AbortSignal.timeout(240000), // 4 minute timeout
-        }
-      )
-    } catch (fetchError) {
-      // Handle timeout or network errors
-      if (fetchError instanceof Error && fetchError.name === "AbortError") {
-        throw new Error(
-          "Request timed out. BrightData may still be processing the scrape. Check your BrightData dashboard for the snapshot ID, or try again."
-        )
-      }
-      throw fetchError
-    }
-
-    if (!scrapeResponse.ok) {
-      const errorText = await scrapeResponse.text()
-      throw new Error(
-        `BrightData request failed: ${scrapeResponse.status} ${scrapeResponse.statusText} - ${errorText}`
-      )
-    }
-
-    const scrapeData = (await scrapeResponse.json()) as BrightDataScrapeResponse
-
-    const newSnapshotId = scrapeData.snapshot_id
-    if (!newSnapshotId || typeof newSnapshotId !== "string") {
-      throw new Error("No valid snapshot_id returned from BrightData")
-    }
-
-    console.log(`[Sync] Created snapshot ${newSnapshotId}`)
-
-    const duration = Date.now() - startTime
-
-    // Store snapshot ID in database
-    await db.insert(brightdataSnapshots).values({
-      snapshotId: newSnapshotId,
-    })
-
-    return NextResponse.json({
-      message: "Scrape initiated successfully",
-      snapshotId: newSnapshotId,
-      count: validSources.length,
-      duration: `${duration}ms`,
-      nextStep: `Call /api/sync?snapshot_id=${newSnapshotId} to fetch and process results`,
-    })
-  } catch (err) {
-    const duration = Date.now() - startTime
-    const errorMessage =
-      err instanceof Error ? err.message : "Unknown error occurred"
-    const errorStack = err instanceof Error ? err.stack : undefined
-
-    console.error(`[Sync] Error after ${duration}ms:`, {
-      message: errorMessage,
-      stack: errorStack,
-    })
-
+  if (!snapshots.length) {
     return NextResponse.json(
       {
-        error: "Failed to initiate scrape",
-        message: errorMessage,
-        duration: `${duration}ms`,
+        error: "No snapshots found",
+        message: "Please call /api/get-snapshot first to create a snapshot",
       },
-      { status: 500 }
+      { status: 404 }
     )
   }
+
+  const snapshotId = snapshots[0].snapshotId
+
+  // Phase 2: Check and process snapshot results
+  return await processSnapshot(snapshotId, startTime)
 }
 
 // Phase 2: Process snapshot results
@@ -278,7 +155,6 @@ async function processSnapshot(
         snapshotId,
         ready: false,
         duration: `${Date.now() - startTime}ms`,
-        nextStep: `Call /api/sync?snapshot_id=${snapshotId} again later to check results`,
       })
     }
 
@@ -303,9 +179,19 @@ async function processSnapshot(
       }
 
       const data = await resultResponse.json()
-      results = Array.isArray(data)
-        ? data
-        : (data.results as BrightDataResult[]) || []
+      // More defensive parsing of response
+      if (Array.isArray(data)) {
+        results = data as BrightDataResult[]
+      } else if (
+        typeof data === "object" &&
+        data !== null &&
+        "results" in data &&
+        Array.isArray(data.results)
+      ) {
+        results = data.results as BrightDataResult[]
+      } else {
+        results = []
+      }
     }
 
     if (!results || results.length === 0) {
@@ -346,7 +232,9 @@ async function processSnapshot(
       }
 
       const amazonSource = validSources.find(
-        (source) => source.affiliateTag === result.asin
+        (source) =>
+          source.affiliateTag?.trim().toLowerCase() ===
+          result.asin?.trim().toLowerCase()
       )
 
       if (!amazonSource) {
@@ -505,7 +393,7 @@ async function processSnapshot(
       {
         error: "Failed to process snapshot",
         message: errorMessage,
-        snapshotId,
+        snapshotId: snapshotId || "unknown",
         duration: `${duration}ms`,
       },
       { status: 500 }
