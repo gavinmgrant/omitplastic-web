@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OmitPlastic
+
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/gavinmgrant/omitplastic-web/blob/main/LICENSE)
+
+OmitPlastic is a full-stack web app that lists products that are plastic-free or use less plastic to reduce plastic pollution. Users can create an account to favorite products. Product data is synced with Amazon product data via a protected endpoint that calls the Bright Data API in Vercel cron jobs.
+
+## Live App
+
+See a live version of this app here: [www.omitplastic.com](https://www.omitplastic.com/).
+
+## Technology
+
+* [TypeScript](https://www.typescriptlang.org/) - Strongly typed programming language
+* [React](https://reactjs.org/) - JS library for UI
+* [Next.js](https://nextjs.org/) - React framework
+* [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+* [Neon](https://neon.com/) - Serverless Postgres database
+* [Neon Auth](https://neon.com/docs/neon-auth/overview) - Authentication and user management
+* [Drizzle ORM](https://orm.drizzle.team/) - TypeScript Object-Relational Mapping
+* [Bright Data](https://brightdata.com/) - Web scraper APIs 
+* [Vercel](https://vercel.com/) - Cloud platform for deployment and cron jobs
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies and set up the environment variables (see below):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run the database migrations to create the tables in the Neon database:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx drizzle-kit push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Then, start the development server to run the app locally:
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Environmental Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Neon connection string
+DATABASE_URL=
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Neon Auth environment variables for Next.js
+NEXT_PUBLIC_STACK_PROJECT_ID=
+NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY=
+STACK_SECRET_SERVER_KEY=
 
-## Deploy on Vercel
+# BrightData environmental variables to scrape Amazon product data
+BRIGHTDATA_API_KEY=
+BRIGHTDATA_DATASET_ID=
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Secret to protect the sync endpoint from unauthorized requests for Vercel
+CRON_SECRET=
+```
