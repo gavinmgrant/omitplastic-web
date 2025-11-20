@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { sourceType } from "@/types/sourceType"
 
 interface Props {
@@ -22,9 +21,9 @@ const ProductDescriptionDialog = ({ name, description, source }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="link" size="sm">
+        <p className="inline-block font-semibold text-primary cursor-pointer hover:underline ml-1">
           Read more
-        </Button>
+        </p>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

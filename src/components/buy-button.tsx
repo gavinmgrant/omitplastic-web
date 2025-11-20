@@ -27,7 +27,9 @@ const BuyButton = ({ source, justify = "left" }: Props) => {
             Buy from {source.sourceName} {source.price && `$${source.price}`}
           </Button>
         </Link>
-        <p className="text-sm text-muted-foreground">{source.availability}</p>
+        {source.availability !== "unknown" && (
+          <p className="text-sm text-muted-foreground">{source.availability}</p>
+        )}
       </div>
       {source.sourceName === "Amazon" && (
         <p

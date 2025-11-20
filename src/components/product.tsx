@@ -38,9 +38,14 @@ const Product: FC<Props> = ({
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
-      <div className="w-full space-y-6 max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold block lg:hidden">{name}</h1>
-        <div className="w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-14 relative">
+      <div className="w-full space-y-4 lg:space-y-6 max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold block lg:hidden leading-tight">
+          {name}
+        </h1>
+        <div className="block lg:hidden">
+          <LeafScore score={plasticScore ?? 1} size="lg" />
+        </div>
+        <div className="w-full flex flex-col lg:flex-row items-center gap-0 lg:gap-14 relative">
           {imageUrl && (
             <div className="h-82 sm:h-108 sm:w-108 w-full shrink-0">
               <div className="relative w-full h-82 sm:h-108 sm:w-108 aspect-square rounded-lg overflow-hidden">
@@ -60,12 +65,18 @@ const Product: FC<Props> = ({
 
           <div className="flex flex-col gap-6 lg:mt-4">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold hidden lg:block">{name}</h1>
-              <LeafScore score={plasticScore ?? 1} size="lg" />
+              <h1 className="text-3xl font-bold hidden lg:block leading-tight">
+                {name}
+              </h1>
+              <div className="hidden lg:block">
+                <LeafScore score={plasticScore ?? 1} size="lg" />
+              </div>
             </div>
             {description ? (
               <p className="text-muted-foreground">
-                {truncateDescription(description)}
+                {isShortDescription
+                  ? description
+                  : truncateDescription(description)}
 
                 {!isShortDescription && (
                   <ProductDescriptionDialog

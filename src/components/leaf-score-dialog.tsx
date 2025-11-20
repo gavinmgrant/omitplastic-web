@@ -24,7 +24,14 @@ const LeafScoreDialog = () => {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-3">
-              How the Leaf Score Works <LeafScore score={5} />
+              How the Leaf Score Works{" "}
+              <span className="hidden sm:inline">
+                {" "}
+                <LeafScore score={5} />
+              </span>
+            </div>
+            <div className="block sm:hidden mt-2">
+              <LeafScore score={5} />
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -60,25 +67,25 @@ const LeafScoreDialog = () => {
             the planet when you&apos;re done using them.{" "}
           </span>
           <span className="text-lg font-semibold block">Score Range</span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-3 leading-4">
             <LeafScore score={5} /> Excellent: fully plastic-free with high
             sustainability impact{" "}
           </span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-3 leading-4">
             <LeafScore score={4} /> Great: very low plastic and meaningful waste
             reduction
           </span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-3 leading-4">
             <LeafScore score={3} /> Good: reduces plastic, but includes minor
             compromises
           </span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-3 leading-4">
             <LeafScore score={2} /> Fair: Some plastic reduction, but limited
             overall impact
           </span>
-          <span className="flex items-center gap-2">
-            <LeafScore score={1} /> Poor: Little plastic reduction, so they will
-            not be shown here
+          <span className="flex items-center gap-3 leading-4">
+            <LeafScore score={1} /> Poor: Little plastic reduction, no real
+            impact
           </span>
         </DialogDescription>
         <DialogFooter>
