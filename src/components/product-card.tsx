@@ -1,7 +1,7 @@
 import { FC } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { CircleQuestionMark } from "lucide-react"
+import { Gift } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -56,8 +56,8 @@ const ProductCard: FC<Props> = ({
                     className="object-contain"
                   />
                 ) : (
-                  <div className="w-full h-full bg-stone-200 flex items-center justify-center">
-                    <CircleQuestionMark className="size-20 text-white" />
+                  <div className="w-full h-full bg-stone-100 flex items-center justify-center">
+                    <Gift className="size-20 text-stone-300" />
                   </div>
                 )}
               </div>
