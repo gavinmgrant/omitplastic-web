@@ -8,6 +8,20 @@ OmitPlastic is a full-stack web app that lists products that are plastic-free or
 
 See a live version of this app here: [www.omitplastic.com](https://www.omitplastic.com/).
 
+## User Flow
+
+![Home Page](./public/images/home.gif)
+
+* As a user, I want to be able to search for products by keyword or category.
+
+![Product Page](./public/images/product.gif)
+
+* As a user, I want to be able to view a product detail page and favorite products.
+
+![Favorites Page](./public/images/favorites.gif)
+
+* As a user, I want to be able to view and manage my list of favorite products.
+
 ## Technology
 
 * [TypeScript](https://www.typescriptlang.org/) - Strongly typed programming language
