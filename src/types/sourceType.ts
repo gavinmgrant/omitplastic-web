@@ -8,4 +8,5 @@ export type sourceType = {
   currency: string | null
   availability: string | null
   lastSynced: Date | null
+  rating: string | null
 }

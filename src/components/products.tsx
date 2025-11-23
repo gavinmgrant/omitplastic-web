@@ -159,7 +159,7 @@ const Products: FC = () => {
 
   return (
     <>
-      <div className="pb-4 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+      <div className="pb-4 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-0 sm:gap-2">
         {results.length > 0 && !isLoading ? (
           <div>
             {query && categorySlug && categorySlug !== "all" ? (
@@ -194,21 +194,24 @@ const Products: FC = () => {
           <SearchInput expanded />
         </div>
 
-        <Select
-          value={categorySlug || "all"}
-          onValueChange={handleCategoryChange}
-        >
-          <SelectTrigger className="w-full sm:w-[188px]">
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent position="popper" sideOffset={2}>
-            {categoryOptions.map((category) => (
-              <SelectItem key={category.value} value={category.value}>
-                {category.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <p className="hidden sm:block">Category:</p>
+          <Select
+            value={categorySlug || "all"}
+            onValueChange={handleCategoryChange}
+          >
+            <SelectTrigger className="w-full sm:w-[188px]">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent position="popper" sideOffset={2}>
+              {categoryOptions.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">

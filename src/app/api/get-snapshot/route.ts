@@ -84,7 +84,7 @@ export async function GET(request: Request) {
     }
 
     const customOutputFields =
-      "final_price%2Cdescription%2Cavailability%2Casin%2Cimage_url%2Cupc"
+      "final_price%2Cdescription%2Cavailability%2Casin%2Cimage_url%2Cupc%2Crating"
 
     const amazonUrls = validSources.map((source) => ({
       url: `https://www.amazon.com/dp/${source.affiliateTag}`,

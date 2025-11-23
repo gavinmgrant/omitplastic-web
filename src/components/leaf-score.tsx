@@ -14,8 +14,8 @@ const LeafScore = ({ score, size = "sm" }: LeafScoreProps) => {
   )
 
   return (
-    <div className="flex items-center justify-start relative gap-2">
-      <div className="flex items-center gap-0.5">
+    <span className="flex items-center justify-start relative gap-2">
+      <span className="flex items-center gap-0.5">
         {leafScore.map((_, index) => (
           <Leaf
             key={index}
@@ -25,9 +25,9 @@ const LeafScore = ({ score, size = "sm" }: LeafScoreProps) => {
             fill={score >= index + 1 ? "green" : "none"}
           />
         ))}
-      </div>
-      {size === "lg" && <LeafScoreDialog />}
-    </div>
+      </span>
+      {size === "lg" && <LeafScoreDialog score={score} />}
+    </span>
   )
 }
 

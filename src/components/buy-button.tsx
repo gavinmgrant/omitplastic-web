@@ -19,13 +19,21 @@ const BuyButton = ({ source, justify = "left" }: Props) => {
       >
         <Link
           href={source.sourceUrl || ""}
-          className="w-full sm:w-auto"
+          className={cn(
+            "w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2",
+            justify === "right" ? "sm:flex-row-reverse" : ""
+          )}
           target="_blank"
           rel="noopener noreferrer"
         >
           <Button className="w-full sm:w-auto">
             Buy from {source.sourceName} {source.price && `$${source.price}`}
           </Button>
+          {source.rating && (
+            <span className="text-sm text-muted-foreground">
+              Rating: {source.rating}/5
+            </span>
+          )}
         </Link>
         {source.availability !== "unknown" && (
           <p className="text-sm text-muted-foreground">{source.availability}</p>

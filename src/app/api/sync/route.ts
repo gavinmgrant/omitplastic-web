@@ -15,6 +15,7 @@ interface BrightDataResult {
   description?: string
   image_url?: string
   upc?: string
+  rating?: number
   error?: string
   [key: string]: unknown
 }
@@ -27,6 +28,7 @@ interface ProcessedResult {
   description?: string
   imageUrl?: string
   barcode?: string
+  rating?: number
   success: boolean
   error?: string
 }
@@ -254,6 +256,7 @@ async function processSnapshot(
         price: result.final_price ?? null,
         availability: result.availability ?? "unknown",
         asin: result.asin,
+        rating: result.rating,
         success: true,
       }
 
@@ -301,6 +304,10 @@ async function processSnapshot(
                     ? String(processedResult.price)
                     : null,
                 availability: processedResult.availability,
+                rating:
+                  processedResult.rating !== undefined
+                    ? String(processedResult.rating)
+                    : null,
                 lastSynced: new Date(),
               })
               .where(eq(sources.id, amazonSource.id))

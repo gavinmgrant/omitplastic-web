@@ -45,7 +45,7 @@ const ProductCard: FC<Props> = ({
           </CardHeader>
           <div className="flex flex-col justify-between h-full gap-6">
             <CardContent className="flex items-start gap-6">
-              <div className="relative min-w-40 h-40 rounded-lg overflow-hidden">
+              <div className="relative min-w-36 h-36 rounded-lg overflow-hidden">
                 {imageUrl ? (
                   <Image
                     src={imageUrl}

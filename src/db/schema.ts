@@ -63,6 +63,7 @@ export const sources = pgTable("sources", {
   price: numeric("price", { precision: 10, scale: 2 }),
   currency: text("currency").default("USD"),
   availability: text("availability").default("In Stock"),
+  rating: numeric("rating", { precision: 2, scale: 1 }),
   lastSynced: timestamp("last_synced").default(sql`now()`),
 })
 

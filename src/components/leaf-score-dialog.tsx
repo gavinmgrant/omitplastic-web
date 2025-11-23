@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import LeafScore from "@/components/leaf-score"
 
-const LeafScoreDialog = () => {
+const LeafScoreDialog = ({ score }: { score: number }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -23,16 +23,16 @@ const LeafScoreDialog = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <div className="flex items-center gap-3">
+            <span className="flex items-center gap-3">
               How the Leaf Score Works{" "}
               <span className="hidden sm:inline">
                 {" "}
-                <LeafScore score={5} />
+                <LeafScore score={score} />
               </span>
-            </div>
-            <div className="block sm:hidden mt-2">
-              <LeafScore score={5} />
-            </div>
+            </span>
+            <span className="block sm:hidden mt-2">
+              <LeafScore score={score} />
+            </span>
           </DialogTitle>
         </DialogHeader>
         <DialogDescription className="space-y-2">

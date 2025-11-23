@@ -21,9 +21,9 @@ const ProductDescriptionDialog = ({ name, description, source }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <p className="inline-block font-semibold text-primary cursor-pointer hover:underline ml-1">
+        <span className="inline-block font-semibold text-primary cursor-pointer hover:underline ml-1">
           Read more
-        </p>
+        </span>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

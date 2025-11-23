@@ -19,14 +19,14 @@ export default async function Home() {
             Find products that use less or no plastic. Search by keyword or
             select a category to get started.
           </p>
-          <div className="w-full max-w-[615px] mx-auto">
+          <div className="w-full max-w-[523px] mx-auto">
             <SearchInput
               expanded={true}
               disableExpand={true}
               placeholder="Search by keyword"
               padding="py-5"
             />
-            <div className="flex flex-wrap items-center justify-center sm:justify-between gap-3 mt-4">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
               {categoryOptions.map((category) => {
                 if (category.value !== "all") {
                   return (
