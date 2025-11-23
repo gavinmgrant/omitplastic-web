@@ -3,7 +3,8 @@ export const categories = {
   "bottles": "de866af6-5874-4db3-aeb2-40f6f95b7d38",
   "food-kitchen": "359811fb-b4f6-40df-9c78-2b9de86396d4",
   "household-supplies": "f26c3303-e610-4c6a-9e9a-aa86ed9aaff1",
-  "personal-care-and-cleaning": "f302df97-39b2-4174-98e8-d2a513604b6a",
+  "personal-care": "f302df97-39b2-4174-98e8-d2a513604b6a",
+  "pet-food-supplies": "b21792b2-a345-4f7e-8aa1-7536a37003b9",
 }
 
 export const categoryOptions = [
@@ -13,4 +14,5 @@ export const categoryOptions = [
   { label: "Food & Kitchen", value: "food-kitchen" },
   { label: "Household Supplies", value: "household-supplies" },
   { label: "Personal Care", value: "personal-care" },
+  { label: "Pet Food & Supplies", value: "pet-food-supplies" },
 ]
