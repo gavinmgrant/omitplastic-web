@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import Link from "next/link"
 import type { Metadata } from "next"
 import { StackProvider, StackTheme } from "@stackframe/stack"
 import { stackClientApp } from "@/stack/client"
@@ -39,8 +40,14 @@ export default function RootLayout({
             </main>
           </StackTheme>
         </StackProvider>
-        <footer className="text-center text-sm py-6 px-4">
-          <p className="text-xs relative z-10 max-w-fit mx-auto">
+        <footer className="py-6 px-4 flex items-center justify-between gap-2 text-xs">
+          <Link
+            href="/guides"
+            className="text-primary hover:border-b border-primary"
+          >
+            Guides
+          </Link>
+          <p>
             &copy; {new Date().getFullYear()}{" "}
             <a
               href="https://gavingrant.com"

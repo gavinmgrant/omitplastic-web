@@ -214,7 +214,7 @@ const Products: FC = () => {
         </div>
       </div>
 
-      <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full">
+      <div className="relative w-full gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 h-full">
         {isLoading ? (
           <SkeletonProductCards />
         ) : (

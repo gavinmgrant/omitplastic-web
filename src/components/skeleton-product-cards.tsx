@@ -1,5 +1,5 @@
 const SkeletonProductCards = () => {
-  const cards = Array.from({ length: 9 }, (_, index) => index)
+  const cards = Array.from({ length: 12 }, (_, index) => index)
   return (
     <>
       {cards.map((card) => (

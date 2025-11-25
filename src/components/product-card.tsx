@@ -24,6 +24,7 @@ interface Props {
   isFavorite?: boolean
   onFavoriteChange?: (productId: string, isFavorite: boolean) => void
   isLoggedIn?: boolean
+  hideFavoriteButton?: boolean
 }
 
 const ProductCard: FC<Props> = ({
@@ -31,6 +32,7 @@ const ProductCard: FC<Props> = ({
   isFavorite = false,
   onFavoriteChange,
   isLoggedIn = false,
+  hideFavoriteButton = false,
 }) => {
   const { id, sources, slug, imageUrl, name, description, plasticScore } =
     product
@@ -44,8 +46,8 @@ const ProductCard: FC<Props> = ({
             <LeafScore score={plasticScore ?? 1} />
           </CardHeader>
           <div className="flex flex-col justify-between h-full gap-6">
-            <CardContent className="flex items-start gap-6">
-              <div className="relative min-w-36 h-36 rounded-lg overflow-hidden">
+            <CardContent className="flex items-start gap-6 h-full">
+              <div className="relative min-w-32 aspect-square rounded-lg overflow-hidden">
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
@@ -53,7 +55,7 @@ const ProductCard: FC<Props> = ({
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     loading="eager"
-                    className="object-contain"
+                    className="object-contain p-0! m-0!"
                   />
                 ) : (
                   <div className="w-full h-full bg-stone-100 flex items-center justify-center">
@@ -81,25 +83,27 @@ const ProductCard: FC<Props> = ({
         </Card>
       </Link>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="z-10 absolute bottom-6 left-6">
-            <FavoriteButton
-              productId={id}
-              showText={false}
-              isFavorite={isFavorite}
-              onFavoriteChange={onFavoriteChange}
-            />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          {isLoggedIn ? (
-            <p>{isFavorite ? "Remove from favorites" : "Add to favorites"}</p>
-          ) : (
-            <p>Sign in to add to favorites</p>
-          )}
-        </TooltipContent>
-      </Tooltip>
+      {!hideFavoriteButton && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="z-10 absolute bottom-6 left-6">
+              <FavoriteButton
+                productId={id}
+                showText={false}
+                isFavorite={isFavorite}
+                onFavoriteChange={onFavoriteChange}
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isLoggedIn ? (
+              <p>{isFavorite ? "Remove from favorites" : "Add to favorites"}</p>
+            ) : (
+              <p>Sign in to add to favorites</p>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      )}
     </div>
   )
 }
