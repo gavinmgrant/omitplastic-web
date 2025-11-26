@@ -5,9 +5,10 @@ import LeafScoreDialog from "@/components/leaf-score-dialog"
 interface LeafScoreProps {
   score: number
   size?: "sm" | "lg"
+  productName?: string
 }
 
-const LeafScore = ({ score, size = "sm" }: LeafScoreProps) => {
+const LeafScore = ({ score, size = "sm", productName }: LeafScoreProps) => {
   const leafScore = Array.from({ length: 5 }, (_, index) => index < score)
   const color = leafScore.map((score) =>
     score ? "text-green-600" : "text-stone-300"
@@ -26,7 +27,9 @@ const LeafScore = ({ score, size = "sm" }: LeafScoreProps) => {
           />
         ))}
       </span>
-      {size === "lg" && <LeafScoreDialog score={score} />}
+      {size === "lg" && (
+        <LeafScoreDialog score={score} productName={productName} />
+      )}
     </span>
   )
 }

@@ -278,7 +278,7 @@ const Products: FC = () => {
         <div className="h-10 flex items-center justify-center">
           <div className="flex items-center justify-center gap-2">
             <Spinner className="w-6 h-6" />
-            <p>Loading...</p>
+            <p>Loading more products...</p>
           </div>
         </div>
       )}

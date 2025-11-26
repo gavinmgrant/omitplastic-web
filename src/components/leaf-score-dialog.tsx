@@ -12,7 +12,12 @@ import {
 import { Button } from "@/components/ui/button"
 import LeafScore from "@/components/leaf-score"
 
-const LeafScoreDialog = ({ score }: { score: number }) => {
+type Props = {
+  score: number
+  productName?: string
+}
+
+const LeafScoreDialog = ({ score, productName }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -20,22 +25,47 @@ const LeafScoreDialog = ({ score }: { score: number }) => {
           <Info className="size-4.5 text-muted-foreground" strokeWidth={3} />
         </div>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="space-y-0!">
+        <DialogHeader className="m-0! p-0!">
           <DialogTitle>
-            <span className="flex items-center gap-3">
-              How the Leaf Score Works{" "}
-              <span className="hidden sm:inline">
-                {" "}
-                <LeafScore score={score} />
-              </span>
-            </span>
-            <span className="block sm:hidden mt-2">
+            <span className="mb-2! flex items-center gap-3">
+              <span className="text-lg font-semibold">The Leaf Score</span>
               <LeafScore score={score} />
+            </span>
+            <span>
+              {productName && (
+                <span className="text-sm font-normal leading-3">
+                  {productName}
+                </span>
+              )}
             </span>
           </DialogTitle>
         </DialogHeader>
         <DialogDescription className="space-y-2">
+          <span className="text-lg font-semibold block">Score Range</span>
+          <span className="flex items-center gap-3 leading-4">
+            <LeafScore score={5} /> Excellent: fully plastic-free with high
+            sustainability impact{" "}
+          </span>
+          <span className="flex items-center gap-3 leading-4">
+            <LeafScore score={4} /> Great: very low plastic and meaningful waste
+            reduction
+          </span>
+          <span className="flex items-center gap-3 leading-4">
+            <LeafScore score={3} /> Good: reduces plastic, but includes minor
+            compromises
+          </span>
+          <span className="flex items-center gap-3 leading-4">
+            <LeafScore score={2} /> Fair: Some plastic reduction, but limited
+            overall impact
+          </span>
+          <span className="flex items-center gap-3 leading-4">
+            <LeafScore score={1} /> Poor: Little plastic reduction, no real
+            impact
+          </span>
+          <span className="text-lg font-semibold block mt-4!">
+            Score Calculation
+          </span>
           <span className="block">
             The Leaf Score (1–5) helps you quickly understand how plastic-free
             and eco-friendly a product is. Each product is evaluated across five
@@ -65,27 +95,6 @@ const LeafScoreDialog = ({ score }: { score: number }) => {
             5. <u>End-of-Life</u> (0–1 point) Products that are recyclable,
             compostable, or biodegradable get a final point for being gentle on
             the planet when you&apos;re done using them.{" "}
-          </span>
-          <span className="text-lg font-semibold block">Score Range</span>
-          <span className="flex items-center gap-3 leading-4">
-            <LeafScore score={5} /> Excellent: fully plastic-free with high
-            sustainability impact{" "}
-          </span>
-          <span className="flex items-center gap-3 leading-4">
-            <LeafScore score={4} /> Great: very low plastic and meaningful waste
-            reduction
-          </span>
-          <span className="flex items-center gap-3 leading-4">
-            <LeafScore score={3} /> Good: reduces plastic, but includes minor
-            compromises
-          </span>
-          <span className="flex items-center gap-3 leading-4">
-            <LeafScore score={2} /> Fair: Some plastic reduction, but limited
-            overall impact
-          </span>
-          <span className="flex items-center gap-3 leading-4">
-            <LeafScore score={1} /> Poor: Little plastic reduction, no real
-            impact
           </span>
         </DialogDescription>
         <DialogFooter>

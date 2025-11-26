@@ -43,7 +43,7 @@ const Product: FC<Props> = ({
           {name}
         </h1>
         <div className="block lg:hidden">
-          <LeafScore score={plasticScore ?? 1} size="lg" />
+          <LeafScore score={plasticScore ?? 1} size="lg" productName={name} />
         </div>
         <div className="w-full flex flex-col lg:flex-row items-center gap-0 lg:gap-14 relative">
           {imageUrl && (
@@ -69,7 +69,7 @@ const Product: FC<Props> = ({
                 {name}
               </h1>
               <div className="hidden lg:block">
-                <LeafScore score={plasticScore ?? 1} size="lg" />
+                <LeafScore score={plasticScore ?? 1} size="lg" productName={name} />
               </div>
             </div>
             {description ? (
