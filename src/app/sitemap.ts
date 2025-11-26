@@ -34,7 +34,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // Get the Keystatic filenames in content/guides and add them to the dynamic entries
   const guides = await reader.collections.guides.all()
   const guideEntries: MetadataRoute.Sitemap = guides.map((guide) => ({
     url: `${baseUrl}/guides/${guide.slug}`,

@@ -39,7 +39,7 @@ const ProductCard: FC<Props> = ({
 
   return (
     <div className="relative h-full">
-      <Link href={`/products/${slug}`}>
+      <Link href={`/products/${slug}`} className="no-underline">
         <Card className="h-full">
           <CardHeader>
             <CardTitle>{name}</CardTitle>

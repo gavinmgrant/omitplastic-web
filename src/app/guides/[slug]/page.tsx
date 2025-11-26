@@ -60,9 +60,9 @@ export default async function GuidePage({ params }: GuidePageProps) {
 
   return (
     <article className="max-w-6xl mx-auto prose">
-      <header className="mb-12">
+      <header className="mb-10">
         {coverImage && (
-          <div className="relative w-full h-48 sm:h-72 lg:h-88 mb-6 rounded-lg overflow-hidden">
+          <div className="relative w-full h-48 sm:h-72 lg:h-88 rounded-lg overflow-hidden mb-6">
             <Image
               src={coverImage}
               alt={guide.title}
@@ -73,9 +73,9 @@ export default async function GuidePage({ params }: GuidePageProps) {
             />
           </div>
         )}
-        <h1 className="font-bold mb-4">{guide.title}</h1>
+        <h1 className="font-bold p-0! m-0!">{guide.title}</h1>
         {guide.description && (
-          <p className="text-xl text-muted-foreground mb-4">
+          <p className="text-xl text-muted-foreground mt-4!">
             {guide.description}
           </p>
         )}
