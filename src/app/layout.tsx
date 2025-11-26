@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>
-            <Suspense fallback={<div className="h-12 w-full mb-4"></div>}>
+            <Suspense fallback={<div className="h-12 w-full mb-4 fixed top-0 left-4 right-4"></div>}>
               <Header />
             </Suspense>
             <main className="min-h-[calc(100vh-64px)] px-4 pb-4 pt-16">

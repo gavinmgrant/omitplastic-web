@@ -1,7 +1,12 @@
 import Link from "next/link"
 import Image from "next/image"
 import { reader } from "@/app/keystatic/reader"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export default async function GuidesPage() {
   const guides = await reader.collections.guides.all()
@@ -53,7 +58,9 @@ export default async function GuidesPage() {
                     </div>
                   )}
                   <CardHeader>
-                    <CardTitle className="text-xl font-bold leading-tight">{entry.title}</CardTitle>
+                    <CardTitle className="text-xl font-bold leading-tight">
+                      {entry.title}
+                    </CardTitle>
                     {entry.description && (
                       <CardDescription className="line-clamp-3">
                         {entry.description}
@@ -69,4 +76,3 @@ export default async function GuidesPage() {
     </div>
   )
 }
-
