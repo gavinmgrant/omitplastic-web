@@ -1,28 +1,40 @@
 import { searchProducts } from "@/actions/searchAction"
+import { getProductsByIds } from "@/actions/productAction"
 import ProductCard from "@/components/product-card"
 import { productType } from "@/types"
 
 interface ProductListProps {
-  category: string
+  category?: string
+  productIds?: string[]
   limit?: number
 }
 
 export default async function ProductList({
   category,
+  productIds,
   limit = 10,
 }: ProductListProps) {
-  const result = await searchProducts("", category, {
-    limit,
-    orderBy: "plasticScore",
-    orderDirection: "desc",
-  })
+  let products: productType[]
 
-  const products = Array.isArray(result) ? result : result.data
+  if (productIds && productIds.length > 0) {
+    // Fetch products by IDs
+    products = await getProductsByIds(productIds)
+  } else if (category) {
+    // Fetch products by category
+    const result = await searchProducts("", category, {
+      limit,
+      orderBy: "plasticScore",
+      orderDirection: "desc",
+    })
+    products = Array.isArray(result) ? result : result.data
+  } else {
+    products = []
+  }
 
   if (products.length === 0) {
     return (
       <div className="text-sm text-muted-foreground py-4">
-        No products found in this category.
+        No products found.
       </div>
     )
   }
