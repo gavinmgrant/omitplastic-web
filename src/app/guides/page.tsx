@@ -24,8 +24,8 @@ export default async function GuidesPage() {
 
   return (
     <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Guides</h1>
+      <div className="mb-6">
+        <h1 className="text-5xl font-bold mb-4">Guides</h1>
         <p className="text-muted-foreground text-lg">
           Learn how to reduce plastic waste with our practical guides and tips.
         </p>
@@ -36,7 +36,7 @@ export default async function GuidesPage() {
           <p className="text-muted-foreground">No guides available yet.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
           {sortedGuides.map((guide) => {
             const { slug, entry } = guide
             const coverImage = entry.coverImage
