@@ -32,6 +32,7 @@ See a live version of this app here: [www.omitplastic.com](https://www.omitplast
 * [Neon Auth](https://neon.com/docs/neon-auth/overview) - Authentication and user management
 * [Drizzle ORM](https://orm.drizzle.team/) - TypeScript Object-Relational Mapping
 * [Bright Data](https://brightdata.com/) - Web scraper APIs 
+* [Keystatic](https://keystatic.com/) - Content management system
 * [Vercel](https://vercel.com/) - Cloud platform for deployment and cron jobs
 
 ## Getting Started
