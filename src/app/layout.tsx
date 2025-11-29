@@ -32,7 +32,11 @@ export default function RootLayout({
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>
-            <Suspense fallback={<div className="h-12 w-full mb-4 fixed top-0 left-4 right-4"></div>}>
+            <Suspense
+              fallback={
+                <div className="h-12 w-full mb-4 fixed top-0 left-4 right-4"></div>
+              }
+            >
               <Header />
             </Suspense>
             <main className="min-h-[calc(100vh-64px)] px-4 pb-4 pt-16">
@@ -40,7 +44,7 @@ export default function RootLayout({
             </main>
           </StackTheme>
         </StackProvider>
-        <footer className="py-6 px-4 flex items-center justify-between gap-2 text-xs">
+        <footer className="py-6 px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
           <Link
             href="/guides"
             className="text-primary hover:border-b border-primary"
@@ -49,6 +53,13 @@ export default function RootLayout({
           </Link>
           <p>
             &copy; {new Date().getFullYear()}{" "}
+            <Link
+              href="/"
+              className="text-primary hover:border-b border-primary"
+            >
+              OmitPlastic
+            </Link>{" "}
+            by{" "}
             <a
               href="https://gavingrant.com"
               target="_blank"
