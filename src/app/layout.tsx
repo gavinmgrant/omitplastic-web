@@ -39,7 +39,7 @@ export default function RootLayout({
             >
               <Header />
             </Suspense>
-            <main className="min-h-[calc(100vh-64px)] px-4 pb-4 pt-16">
+            <main className="min-h-[calc(100vh-84px)] px-4 pb-4 pt-16">
               {children}
             </main>
           </StackTheme>
@@ -51,25 +51,49 @@ export default function RootLayout({
           >
             Guides
           </Link>
-          <p>
-            &copy; {new Date().getFullYear()}{" "}
-            <Link
-              href="/"
-              className="text-primary hover:border-b border-primary"
-            >
-              OmitPlastic
-            </Link>{" "}
-            by{" "}
-            <a
-              href="https://gavingrant.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:border-b border-primary"
-            >
-              Gavin Grant
-            </a>
-            . All rights reserved.
-          </p>
+          <div className="flex flex-col justify-end items-end gap-1">
+            <p>
+              &copy; {new Date().getFullYear()}{" "}
+              <Link
+                href="/"
+                className="text-primary hover:border-b border-primary"
+              >
+                OmitPlastic
+              </Link>{" "}
+              by{" "}
+              <a
+                href="https://gavingrant.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:border-b border-primary"
+              >
+                Gavin Grant
+              </a>
+              . All rights reserved.
+            </p>
+            <div className="flex items-center gap-2 h-4">
+              <Link
+                href="/privacy"
+                className="text-primary hover:border-b border-primary h-4"
+              >
+                Privacy Policy
+              </Link>
+              <span className="text-primary">|</span>
+              <Link
+                href="/terms"
+                className="text-primary hover:border-b border-primary h-4"
+              >
+                Terms of Service
+              </Link>
+              <span className="text-primary">|</span>
+              <Link
+                href="/cookies"
+                className="text-primary hover:border-b border-primary h-4"
+              >
+                Cookie Policy
+              </Link>
+            </div>
+          </div>
         </footer>
       </body>
     </html>
