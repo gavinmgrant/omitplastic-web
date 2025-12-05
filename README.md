@@ -27,6 +27,7 @@ See a live version of this app here: [www.omitplastic.com](https://www.omitplast
 * [TypeScript](https://www.typescriptlang.org/) - Strongly typed programming language
 * [React](https://reactjs.org/) - JS library for UI
 * [Next.js](https://nextjs.org/) - React framework
+* [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview) - Server state management
 * [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 * [Neon](https://neon.com/) - Serverless Postgres database
 * [Neon Auth](https://neon.com/docs/neon-auth/overview) - Authentication and user management
