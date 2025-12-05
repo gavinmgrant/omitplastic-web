@@ -41,7 +41,7 @@ export default function RootLayout({
               >
                 <Header />
               </Suspense>
-              <main className="min-h-[calc(100vh-84px)] px-4 pb-4 pt-16">
+              <main className="min-h-dvh px-4 pb-4 pt-16">
                 {children}
               </main>
             </StackTheme>
