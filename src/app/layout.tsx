@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { StackProvider, StackTheme } from "@stackframe/stack"
+import { QueryProvider } from "@/providers/query-provider"
 import { stackClientApp } from "@/stack/client"
 import { Lexend } from "next/font/google"
 import Header from "@/components/header"
@@ -30,20 +31,22 @@ export default function RootLayout({
       <body
         className={cn("relative w-screen overflow-x-hidden", lexend.className)}
       >
-        <StackProvider app={stackClientApp}>
-          <StackTheme>
-            <Suspense
-              fallback={
-                <div className="h-12 w-full mb-4 fixed top-0 left-4 right-4"></div>
-              }
-            >
-              <Header />
-            </Suspense>
-            <main className="min-h-[calc(100vh-84px)] px-4 pb-4 pt-16">
-              {children}
-            </main>
-          </StackTheme>
-        </StackProvider>
+        <QueryProvider>
+          <StackProvider app={stackClientApp}>
+            <StackTheme>
+              <Suspense
+                fallback={
+                  <div className="h-12 w-full mb-4 fixed top-0 left-4 right-4"></div>
+                }
+              >
+                <Header />
+              </Suspense>
+              <main className="min-h-[calc(100vh-84px)] px-4 pb-4 pt-16">
+                {children}
+              </main>
+            </StackTheme>
+          </StackProvider>
+        </QueryProvider>
         <footer className="py-6 px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
           <Link
             href="/guides"

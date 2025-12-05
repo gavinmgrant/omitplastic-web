@@ -1,4 +1,5 @@
 "use client"
+
 import { FC } from "react"
 import { productType } from "@/types"
 import Image from "next/image"
@@ -13,14 +14,9 @@ const DESCRIPTION_MAX_LENGTH = 480
 interface Props {
   product: productType
   isFavorite?: boolean
-  onFavoriteChange?: (productId: string, isFavorite: boolean) => void
 }
 
-const Product: FC<Props> = ({
-  product,
-  isFavorite = false,
-  onFavoriteChange,
-}) => {
+const Product: FC<Props> = ({ product, isFavorite = false }) => {
   const { id, sources, name, description, imageUrl, plasticScore } = product
   const isShortDescription =
     description && description.length < DESCRIPTION_MAX_LENGTH
@@ -69,7 +65,11 @@ const Product: FC<Props> = ({
                 {name}
               </h1>
               <div className="hidden lg:block">
-                <LeafScore score={plasticScore ?? 1} size="lg" productName={name} />
+                <LeafScore
+                  score={plasticScore ?? 1}
+                  size="lg"
+                  productName={name}
+                />
               </div>
             </div>
             {description ? (
@@ -99,11 +99,7 @@ const Product: FC<Props> = ({
               </div>
             )}
             <div className="flex items-center justify-start">
-              <FavoriteButton
-                productId={id}
-                isFavorite={isFavorite}
-                onFavoriteChange={onFavoriteChange}
-              />
+              <FavoriteButton productId={id} isFavorite={isFavorite} />
             </div>
           </div>
         </div>

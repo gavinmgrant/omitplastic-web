@@ -1,68 +1,48 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Button } from "./ui/button"
 import { Heart } from "lucide-react"
 import { useUser } from "@stackframe/stack"
 import { Spinner } from "@/components/ui/spinner"
-import { addFavorite, removeFavorite } from "@/actions/favoriteAction"
+import { useToggleFavorite } from "@/hooks/use-favorites"
 
 interface Props {
   productId: string
   showText?: boolean
   isFavorite?: boolean
-  onFavoriteChange?: (productId: string, isFavorite: boolean) => void
 }
 
 const FavoriteButton = ({
   productId,
   showText = true,
-  isFavorite: initialIsFavorite = false,
-  onFavoriteChange,
+  isFavorite = false,
 }: Props) => {
-  const [isSaving, setIsSaving] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
-
   const user = useUser()
+  const toggleFavorite = useToggleFavorite()
 
-  useEffect(() => {
-    if (!isSaving) {
-      setIsFavorite(initialIsFavorite)
-    }
-  }, [initialIsFavorite, isSaving])
-
-  const handleFavorite = async () => {
+  const handleFavorite = () => {
     if (!user?.id) return
 
     const newFavoriteState = !isFavorite
-    setIsSaving(true)
-    setIsFavorite(newFavoriteState)
-
-    try {
-      if (newFavoriteState) {
-        await addFavorite(user.id, productId)
-      } else {
-        await removeFavorite(user.id, productId)
-      }
-
-      onFavoriteChange?.(productId, newFavoriteState)
-    } catch (error) {
-      setIsFavorite(!newFavoriteState)
-      console.error("Error updating favorite:", error)
-    } finally {
-      setIsSaving(false)
-    }
+    
+    toggleFavorite.mutate({
+      userId: user.id,
+      productId,
+      isFavorite: newFavoriteState,
+    })
   }
+
+  const isPending = toggleFavorite.isPending
 
   return (
     <Button
       variant="outline"
       size="sm"
       onClick={handleFavorite}
-      disabled={!user?.id}
+      disabled={!user?.id || isPending}
       className="flex items-center justify-center gap-2 h-9 w-full sm:w-auto"
     >
-      {isSaving ? (
+      {isPending ? (
         <Spinner className="size-4 text-red-700" />
       ) : (
         <Heart

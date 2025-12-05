@@ -22,7 +22,6 @@ import LeafScore from "./leaf-score"
 interface Props {
   product: productType
   isFavorite?: boolean
-  onFavoriteChange?: (productId: string, isFavorite: boolean) => void
   isLoggedIn?: boolean
   hideFavoriteButton?: boolean
 }
@@ -30,7 +29,6 @@ interface Props {
 const ProductCard: FC<Props> = ({
   product,
   isFavorite = false,
-  onFavoriteChange,
   isLoggedIn = false,
   hideFavoriteButton = false,
 }) => {
@@ -91,7 +89,6 @@ const ProductCard: FC<Props> = ({
                 productId={id}
                 showText={false}
                 isFavorite={isFavorite}
-                onFavoriteChange={onFavoriteChange}
               />
             </div>
           </TooltipTrigger>

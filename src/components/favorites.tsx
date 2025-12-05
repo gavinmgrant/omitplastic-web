@@ -1,73 +1,34 @@
 "use client"
-import { useEffect, useState, useMemo } from "react"
+
+import { useMemo } from "react"
 import Link from "next/link"
 import { useUser } from "@stackframe/stack"
 import { Frown } from "lucide-react"
-import { getFavoritesByUserId } from "@/actions/favoriteAction"
-import { getProductsByIds } from "@/actions/productAction"
 import { Button } from "@/components/ui/button"
 import ProductCard from "@/components/product-card"
 import SkeletonProductCards from "@/components/skeleton-product-cards"
-import { favoriteType, productType } from "@/types"
+import { useFavorites } from "@/hooks/use-favorites"
+import { productType } from "@/types"
 
 const Favorites = () => {
-  const [favorites, setFavorites] = useState<favoriteType[]>([])
-  const [products, setProducts] = useState<productType[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const user = useUser()
+  const { data: favoritesData, isLoading } = useFavorites(user?.id)
+  const products = useMemo(() => {
+    const unsortedProducts = favoritesData?.products || []
+    return [...unsortedProducts].sort((a, b) => {
+      return (
+        (b.createdAt ?? new Date()).getTime() -
+        (a.createdAt ?? new Date()).getTime()
+      )
+    })
+  }, [favoritesData?.products])
 
-  const favoriteProductIds = useMemo(() => {
-    return new Set(favorites.map((f) => f.productId))
-  }, [favorites])
-
-  useEffect(() => {
-    const loadFavorites = async () => {
-      setIsLoading(true)
-
-      if (!user?.id) {
-        setFavorites([])
-        setProducts([])
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        const favoritesData = await getFavoritesByUserId(user.id)
-        setFavorites(favoritesData as favoriteType[])
-
-        if (favoritesData.length > 0) {
-          const productIds = favoritesData
-            .map((f) => f.productId)
-            .filter((id): id is string => id !== null && id !== undefined)
-          const productsData = await getProductsByIds(productIds)
-          const sortedProductsData = productsData.sort((a, b) => {
-            return (
-              (b.createdAt ?? new Date()).getTime() -
-              (a.createdAt ?? new Date()).getTime()
-            )
-          })
-          setProducts(sortedProductsData)
-        } else {
-          setProducts([])
-        }
-      } catch (error) {
-        console.error("Error loading favorites:", error)
-        setFavorites([])
-        setProducts([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadFavorites()
-  }, [user?.id])
-
-  const handleFavoriteChange = (productId: string, isFavorite: boolean) => {
-    if (!isFavorite) {
-      setFavorites((prev) => prev.filter((f) => f.productId !== productId))
-      setProducts((prev) => prev.filter((p) => p.id !== productId))
-    }
-  }
+  const favorites = favoritesData?.favorites || []
+  const favoriteProductIds = new Set(
+    favorites
+      .map((f) => f.productId)
+      .filter((id): id is string => id !== null && id !== undefined)
+  )
 
   return (
     <>
@@ -77,7 +38,7 @@ const Favorites = () => {
         ) : (
           favorites.length > 0 && (
             <p>
-              Your {products.length}{" "}
+              Your {favorites.length}{" "}
               {favorites.length > 1 ? "favorites" : "favorite"}
             </p>
           )
@@ -92,7 +53,6 @@ const Favorites = () => {
               key={product.id}
               product={product as productType}
               isFavorite={favoriteProductIds.has(product.id)}
-              onFavoriteChange={handleFavoriteChange}
               isLoggedIn={user?.id ? true : false}
             />
           ))

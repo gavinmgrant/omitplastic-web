@@ -1,12 +1,10 @@
 "use client"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { useUser } from "@stackframe/stack"
-import { productType } from "@/types"
 import ProductCard from "@/components/product-card"
-import { searchProducts, type PaginatedResult } from "@/actions/searchAction"
-import { getFavoritesByUserId } from "@/actions/favoriteAction"
+import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Select,
@@ -17,26 +15,28 @@ import {
 } from "@/components/ui/select"
 import { categoryOptions } from "@/config/categories"
 import SkeletonProductCards from "@/components/skeleton-product-cards"
-import SearchInput from "./search-input"
-import { Button } from "./ui/button"
-
-const PRODUCTS_PER_PAGE = 24
+import SearchInput from "@/components/search-input"
+import { useSearchProducts } from "@/hooks/use-products"
+import { useFavorites } from "@/hooks/use-favorites"
+import { productType } from "@/types"
 
 const Products: FC = () => {
-  const [results, setResults] = useState<productType[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [hasMore, setHasMore] = useState(false)
-  const [totalResults, setTotalResults] = useState(0)
-  const [favoriteProductIds, setFavoriteProductIds] = useState<Set<string>>(
-    new Set()
-  )
   const searchParams = useSearchParams()
   const router = useRouter()
   const query = searchParams.get("q")
   const categorySlug = searchParams.get("category")
   const user = useUser()
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useSearchProducts(query || "", categorySlug || undefined)
+  const { data: favoritesData } = useFavorites(user?.id)
+
+  const products = data?.pages.flatMap((page) => page.data) || []
+  const totalResults = data?.pages[0]?.pagination.total || 0
+  const favoriteProductIds = new Set(
+    favoritesData?.favorites
+      .map((f) => f.productId)
+      .filter((id): id is string => id !== null && id !== undefined) || []
+  )
 
   const handleCategoryChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -49,94 +49,12 @@ const Products: FC = () => {
       params.set("category", value)
     }
 
-    // Reset to page 1 when category changes
     params.delete("page")
 
     router.push(`/products?${params.toString()}`)
   }
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!user?.id) {
-        setFavoriteProductIds(new Set())
-        return
-      }
-
-      const favorites = await getFavoritesByUserId(user.id)
-      const favoriteIds = new Set(
-        favorites
-          .map((f) => f.productId)
-          .filter((id): id is string => id !== null && id !== undefined)
-      )
-      setFavoriteProductIds(favoriteIds)
-    }
-
-    fetchFavorites()
-  }, [user?.id])
-
-  useEffect(() => {
-    const fetchResults = async () => {
-      setIsLoading(true)
-      setCurrentPage(1)
-      const result = await searchProducts(
-        query || "",
-        categorySlug || undefined,
-        {
-          page: 1,
-          limit: PRODUCTS_PER_PAGE,
-        }
-      )
-
-      if (result && "pagination" in result) {
-        const paginatedResult = result as PaginatedResult<productType>
-        setResults(paginatedResult.data)
-        setHasMore(paginatedResult.pagination.hasMore)
-        setTotalResults(paginatedResult.pagination.total)
-      } else {
-        setResults(result as productType[])
-        setHasMore(false)
-        setTotalResults(result.length)
-      }
-      setIsLoading(false)
-    }
-    fetchResults()
-  }, [query, categorySlug])
-
-  const handleFavoriteChange = (productId: string, isFavorite: boolean) => {
-    setFavoriteProductIds((prev) => {
-      const newSet = new Set(prev)
-      if (isFavorite) {
-        newSet.add(productId)
-      } else {
-        newSet.delete(productId)
-      }
-      return newSet
-    })
-  }
-
-  const handleLoadMore = async () => {
-    if (isLoadingMore || !hasMore) return
-
-    setIsLoadingMore(true)
-    const nextPage = currentPage + 1
-    const result = await searchProducts(
-      query || "",
-      categorySlug || undefined,
-      {
-        page: nextPage,
-        limit: PRODUCTS_PER_PAGE,
-      }
-    )
-
-    if (result && "pagination" in result) {
-      const paginatedResult = result as PaginatedResult<productType>
-      setResults((prev) => [...prev, ...paginatedResult.data])
-      setHasMore(paginatedResult.pagination.hasMore)
-      setCurrentPage(nextPage)
-    }
-    setIsLoadingMore(false)
-  }
-
+  // Infinite scroll with Intersection Observer
   useEffect(() => {
     const sentinel = document.getElementById("scroll-sentinel")
     if (!sentinel) return
@@ -144,8 +62,8 @@ const Products: FC = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         const first = entries[0]
-        if (first.isIntersecting && hasMore && !isLoadingMore) {
-          handleLoadMore()
+        if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
         }
       },
       { rootMargin: "200px" } // start loading before hitting bottom
@@ -154,13 +72,12 @@ const Products: FC = () => {
     observer.observe(sentinel)
 
     return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasMore, isLoadingMore])
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   return (
     <>
       <div className="pb-4 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-0 sm:gap-2">
-        {results.length > 0 && !isLoading ? (
+        {products.length > 0 && !isLoading ? (
           <div>
             {query && categorySlug && categorySlug !== "all" ? (
               <p>
@@ -218,17 +135,16 @@ const Products: FC = () => {
         {isLoading ? (
           <SkeletonProductCards />
         ) : (
-          results?.map((product) => (
+          products?.map((product) => (
             <ProductCard
               key={product.id}
               product={product as productType}
               isFavorite={favoriteProductIds.has(product.id)}
-              onFavoriteChange={handleFavoriteChange}
               isLoggedIn={user?.id ? true : false}
             />
           ))
         )}
-        {results.length === 0 && !isLoading && (
+        {products.length === 0 && !isLoading && (
           <div className="flex items-center justify-center min-h-[calc(100vh-128px)] w-full absolute top-0 left-0 text-center">
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 space-y-4">
               <p className="text-muted-foreground">
@@ -273,8 +189,8 @@ const Products: FC = () => {
         )}
       </div>
 
-      {hasMore && <div id="scroll-sentinel" className="h-10"></div>}
-      {isLoadingMore && (
+      {hasNextPage && <div id="scroll-sentinel" className="h-10"></div>}
+      {isFetchingNextPage && (
         <div className="h-10 flex items-center justify-center">
           <div className="flex items-center justify-center gap-2">
             <Spinner className="w-6 h-6" />
