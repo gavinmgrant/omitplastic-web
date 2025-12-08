@@ -73,4 +73,7 @@ BRIGHTDATA_DATASET_ID=
 
 # Secret to protect the sync endpoint from unauthorized requests for Vercel
 CRON_SECRET=
+
+# Google Analytics Measurement ID
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=
 ```

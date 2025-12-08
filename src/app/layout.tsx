@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import Link from "next/link"
 import type { Metadata } from "next"
+import { GoogleAnalytics } from "@next/third-parties/google"
 import { StackProvider, StackTheme } from "@stackframe/stack"
 import { QueryProvider } from "@/providers/query-provider"
 import { stackClientApp } from "@/stack/client"
@@ -41,9 +42,7 @@ export default function RootLayout({
               >
                 <Header />
               </Suspense>
-              <main className="min-h-dvh px-4 pb-4 pt-16">
-                {children}
-              </main>
+              <main className="min-h-dvh px-4 pb-4 pt-16">{children}</main>
             </StackTheme>
           </StackProvider>
         </QueryProvider>
@@ -99,6 +98,9 @@ export default function RootLayout({
           </div>
         </footer>
       </body>
+      <GoogleAnalytics
+        gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""}
+      />
     </html>
   )
 }
