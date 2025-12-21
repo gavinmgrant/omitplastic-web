@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { GoogleAnalytics } from "@next/third-parties/google"
@@ -35,13 +34,7 @@ export default function RootLayout({
         <QueryProvider>
           <StackProvider app={stackClientApp}>
             <StackTheme>
-              <Suspense
-                fallback={
-                  <div className="h-12 w-full mb-4 fixed top-0 left-4 right-4"></div>
-                }
-              >
-                <Header />
-              </Suspense>
+              <Header />
               <main className="min-h-dvh px-4 pb-4 pt-16">{children}</main>
             </StackTheme>
           </StackProvider>
