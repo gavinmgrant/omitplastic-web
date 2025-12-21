@@ -6,6 +6,7 @@ import { QueryProvider } from "@/providers/query-provider"
 import { stackClientApp } from "@/stack/client"
 import { Lexend } from "next/font/google"
 import Header from "@/components/header"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 
@@ -40,11 +41,10 @@ export default function RootLayout({
           </StackProvider>
         </QueryProvider>
         <footer className="py-6 px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-          <Link
-            href="/guides"
-            className="text-primary hover:border-b border-primary"
-          >
-            Guides
+          <Link href="/guides">
+            <Button variant="outline" size="sm">
+              Guides
+            </Button>
           </Link>
           <div className="flex flex-col justify-end items-end gap-1">
             <p>
