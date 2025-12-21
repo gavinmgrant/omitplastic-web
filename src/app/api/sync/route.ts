@@ -324,7 +324,7 @@ async function processSnapshot(
 
             if (
               processedResult.description &&
-              processedResult.description.length > 20
+              processedResult.description.length > 30
             ) {
               productUpdates.description = processedResult.description
             }
