@@ -1,7 +1,11 @@
-import { searchProducts } from "@/actions/searchAction"
+"use client"
+
+import { useQuery } from "@tanstack/react-query"
 import { getProductsByIds } from "@/actions/productAction"
+import { useSearchProducts } from "@/hooks/use-products"
 import ProductCard from "@/components/product-card"
 import { productType } from "@/types"
+import { Spinner } from "@/components/ui/spinner"
 
 interface ProductListProps {
   category?: string
@@ -9,26 +13,40 @@ interface ProductListProps {
   limit?: number
 }
 
-export default async function ProductList({
+export default function ProductList({
   category,
   productIds,
   limit = 10,
 }: ProductListProps) {
-  let products: productType[]
+  const { data: productsByIds, isLoading: isLoadingByIds } = useQuery({
+    queryKey: ["products", "byIds", productIds],
+    queryFn: () => getProductsByIds(productIds || []),
+    enabled: !!productIds && productIds.length > 0,
+  })
+
+  const { data: categoryData, isLoading: isLoadingCategory } = useSearchProducts(
+    "",
+    category,
+    !!category && (!productIds || productIds.length === 0)
+  )
+
+  const isLoading = isLoadingByIds || isLoadingCategory
+
+  let products: productType[] = []
 
   if (productIds && productIds.length > 0) {
-    // Fetch products by IDs
-    products = await getProductsByIds(productIds)
-  } else if (category) {
-    // Fetch products by category
-    const result = await searchProducts("", category, {
-      limit,
-      orderBy: "plasticScore",
-      orderDirection: "desc",
-    })
-    products = Array.isArray(result) ? result : result.data
-  } else {
-    products = []
+    products = productsByIds || []
+  } else if (category && categoryData?.pages) {
+    const allProducts = categoryData.pages.flatMap((page) => page.data)
+    products = allProducts.slice(0, limit)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Spinner className="w-6 h-6" />
+      </div>
+    )
   }
 
   if (products.length === 0) {
