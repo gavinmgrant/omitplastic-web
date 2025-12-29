@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import Link from "next/link"
 import { useUser } from "@stackframe/stack"
 import { Frown } from "lucide-react"
+import { AnimatePresence } from "motion/react"
 import { Button } from "@/components/ui/button"
 import ProductCard from "@/components/product-card"
 import SkeletonProductCards from "@/components/skeleton-product-cards"
@@ -48,14 +49,16 @@ const Favorites = () => {
         {isLoading ? (
           <SkeletonProductCards />
         ) : (
-          products?.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product as productType}
-              isFavorite={favoriteProductIds.has(product.id)}
-              isLoggedIn={user?.id ? true : false}
-            />
-          ))
+          <AnimatePresence mode="popLayout">
+            {products?.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product as productType}
+                isFavorite={favoriteProductIds.has(product.id)}
+                isLoggedIn={user?.id ? true : false}
+              />
+            ))}
+          </AnimatePresence>
         )}
 
         {products.length === 0 && !isLoading && (

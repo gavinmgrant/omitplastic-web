@@ -25,6 +25,7 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
     "lucide-react": "^0.553.0",
+    "motion": "^12.23.26",
     "next": "16.0.10",
     "next-mdx-remote": "^5.0.0",
     "react": "19.2.1",

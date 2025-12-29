@@ -2,6 +2,7 @@ import { FC } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Gift } from "lucide-react"
+import { motion } from "motion/react"
 import {
   Card,
   CardContent,
@@ -36,11 +37,19 @@ const ProductCard: FC<Props> = ({
     product
 
   return (
-    <div className="relative h-full">
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+      className="relative h-full"
+    >
       <Link href={`/products/${slug}`} className="no-underline">
         <Card className="h-full">
           <CardHeader>
             <CardTitle>{name}</CardTitle>
+            {id}
             <LeafScore score={plasticScore ?? 1} />
           </CardHeader>
           <div className="flex flex-col justify-between h-full gap-6">
@@ -101,7 +110,7 @@ const ProductCard: FC<Props> = ({
           </TooltipContent>
         </Tooltip>
       )}
-    </div>
+    </motion.div>
   )
 }
 
