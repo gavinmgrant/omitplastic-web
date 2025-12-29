@@ -146,7 +146,10 @@ export const searchProducts = async (
     .select()
     .from(products)
     .where(searchCondition as unknown as SQL<SearchConditions>)
-    .orderBy(orderFn(orderByColumn) as unknown as SQL<SearchConditions>)
+    .orderBy(
+      orderFn(orderByColumn) as unknown as SQL<SearchConditions>,
+      asc(products.id)
+    )
     .limit(limit as number)
     .offset(offset)
 

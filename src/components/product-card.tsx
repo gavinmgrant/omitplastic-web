@@ -49,7 +49,6 @@ const ProductCard: FC<Props> = ({
         <Card className="h-full">
           <CardHeader>
             <CardTitle>{name}</CardTitle>
-            {id}
             <LeafScore score={plasticScore ?? 1} />
           </CardHeader>
           <div className="flex flex-col justify-between h-full gap-6">
