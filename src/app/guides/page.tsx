@@ -8,6 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
+// Revalidate guides page every 60 minutes (guides change less frequently)
+export const revalidate = 3600
+
 export default async function GuidesPage() {
   const guides = await reader.collections.guides.all()
 

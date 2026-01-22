@@ -150,12 +150,17 @@ export async function GET(request: Request) {
       snapshotId: newSnapshotId,
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       message: "Scrape initiated successfully",
       snapshotId: newSnapshotId,
       count: validSources.length,
       duration: `${duration}ms`,
     })
+    
+    // Don't cache cron job responses
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+    
+    return response
   } catch (err) {
     const duration = Date.now() - startTime
     const errorMessage =
@@ -167,7 +172,7 @@ export async function GET(request: Request) {
       stack: errorStack,
     })
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         error: "Failed to initiate scrape",
         message: errorMessage,
@@ -175,5 +180,9 @@ export async function GET(request: Request) {
       },
       { status: 500 }
     )
+    
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+    
+    return response
   }
 }

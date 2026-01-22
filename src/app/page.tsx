@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button"
 import { categoryOptions } from "@/config/categories"
 import Link from "next/link"
 
+// Revalidate home page every 10 minutes
+export const revalidate = 600
+
 export default async function Home() {
   return (
     <>

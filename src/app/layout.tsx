@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     "Buying less plastic means less plastic waste. Find products that use less or no plastic. Search by keyword or select a category to get started.",
 }
 
+// Revalidate root layout every 10 minutes
+export const revalidate = 600
+
 export default function RootLayout({
   children,
 }: Readonly<{

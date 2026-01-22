@@ -5,6 +5,9 @@ import { reader } from "@/app/keystatic/reader"
 import { MDXRemote } from "next-mdx-remote/rsc"
 import ProductList from "@/components/product-list"
 
+// Revalidate guide pages every 60 minutes (guides change less frequently)
+export const revalidate = 3600
+
 interface GuidePageProps {
   params: Promise<{ slug: string }>
 }

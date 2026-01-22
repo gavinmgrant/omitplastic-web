@@ -152,12 +152,16 @@ async function processSnapshot(
     const snapshotStatus = await checkSnapshotReady(snapshotId, apiKey)
 
     if (!snapshotStatus.ready) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         message: "Snapshot not ready yet",
         snapshotId,
         ready: false,
         duration: `${Date.now() - startTime}ms`,
       })
+      
+      response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+      
+      return response
     }
 
     // Fetch results if not already provided
@@ -197,13 +201,17 @@ async function processSnapshot(
     }
 
     if (!results || results.length === 0) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         message: "Snapshot ready but no results found",
         snapshotId,
         ready: true,
         resultsCount: 0,
         duration: `${Date.now() - startTime}ms`,
       })
+      
+      response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+      
+      return response
     }
 
     console.log(
@@ -373,7 +381,7 @@ async function processSnapshot(
       `[Sync] Completed: ${successful} successful, ${failed} failed in ${duration}ms`
     )
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       updatedAt: new Date().toISOString(),
       count: validSources.length,
       successful,
@@ -388,6 +396,11 @@ async function processSnapshot(
         error: r.error,
       })),
     })
+    
+    // Don't cache cron job responses
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+    
+    return response
   } catch (err) {
     const duration = Date.now() - startTime
     const errorMessage =
@@ -399,7 +412,7 @@ async function processSnapshot(
       stack: errorStack,
     })
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         error: "Failed to process snapshot",
         message: errorMessage,
@@ -408,5 +421,9 @@ async function processSnapshot(
       },
       { status: 500 }
     )
+    
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+    
+    return response
   }
 }

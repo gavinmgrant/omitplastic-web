@@ -3,6 +3,9 @@ import { getProductBySlug } from "@/lib/products"
 import ProductWithFavorites from "@/components/product-with-favorites"
 import { notFound } from "next/navigation"
 
+// Revalidate product pages every 10 minutes
+export const revalidate = 600
+
 export async function generateMetadata({
   params,
 }: {

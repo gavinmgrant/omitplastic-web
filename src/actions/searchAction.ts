@@ -4,6 +4,7 @@ import { db } from "@/db/drizzle"
 import { products, sources } from "@/db/schema"
 import { productType, sourceType } from "@/types"
 import { categories } from "@/config/categories"
+import { unstable_cache } from "next/cache"
 
 export interface SearchPaginationOptions {
   page?: number
@@ -28,40 +29,52 @@ export interface SearchConditions {
   categorySlug: string | undefined
 }
 
+// Cache search results for 10 minutes (600 seconds)
+const CACHE_REVALIDATE = 600
+
 const getSearchProductsCount = async (
   query: string,
   categorySlug: string | undefined
 ): Promise<number> => {
-  const conditions = []
+  return unstable_cache(
+    async () => {
+      const conditions = []
 
-  // Add query condition if query exists
-  if (query && query.trim()) {
-    conditions.push(
-      or(
-        ilike(products.name, `%${query}%`),
-        ilike(products.description, `%${query}%`)
-      )
-    )
-  }
+      // Add query condition if query exists
+      if (query && query.trim()) {
+        conditions.push(
+          or(
+            ilike(products.name, `%${query}%`),
+            ilike(products.description, `%${query}%`)
+          )
+        )
+      }
 
-  // Add category condition if category exists and is not "all"
-  if (categorySlug && categorySlug !== "all") {
-    conditions.push(
-      eq(
-        products.categoryId,
-        categories[categorySlug as keyof typeof categories] as string
-      )
-    )
-  }
+      // Add category condition if category exists and is not "all"
+      if (categorySlug && categorySlug !== "all") {
+        conditions.push(
+          eq(
+            products.categoryId,
+            categories[categorySlug as keyof typeof categories] as string
+          )
+        )
+      }
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined
 
-  const result = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(products)
-    .where(whereClause as unknown as SQL<SearchConditions>)
+      const result = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(products)
+        .where(whereClause as unknown as SQL<SearchConditions>)
 
-  return Number(result[0]?.count || 0)
+      return Number(result[0]?.count || 0)
+    },
+    [`search-count-${query}-${categorySlug || "all"}`],
+    {
+      revalidate: CACHE_REVALIDATE,
+      tags: ["products", "search"],
+    }
+  )()
 }
 
 export const searchProducts = async (
@@ -105,28 +118,38 @@ export const searchProducts = async (
       : undefined
 
   if (!limit) {
-    const data = (await db
-      .select()
-      .from(products)
-      .where(
-        searchCondition as unknown as SQL<SearchConditions>
-      )) as productType[]
-    const sourcesData = await db
-      .select()
-      .from(sources)
-      .where(
-        inArray(
-          sources.productId,
-          data.map((p) => p.id)
-        )
-      )
+    const cacheKey = `search-all-${query}-${categorySlug || "all"}`
+    return unstable_cache(
+      async () => {
+        const data = (await db
+          .select()
+          .from(products)
+          .where(
+            searchCondition as unknown as SQL<SearchConditions>
+          )) as productType[]
+        const sourcesData = await db
+          .select()
+          .from(sources)
+          .where(
+            inArray(
+              sources.productId,
+              data.map((p) => p.id)
+            )
+          )
 
-    data.forEach((product: productType) => {
-      product.sources = sourcesData.filter(
-        (source: sourceType) => source.productId === product.id
-      )
-    })
-    return data as productType[]
+        data.forEach((product: productType) => {
+          product.sources = sourcesData.filter(
+            (source: sourceType) => source.productId === product.id
+          )
+        })
+        return data as productType[]
+      },
+      [cacheKey],
+      {
+        revalidate: CACHE_REVALIDATE,
+        tags: ["products", "search"],
+      }
+    )()
   }
 
   const offset = (page - 1) * limit
@@ -142,54 +165,66 @@ export const searchProducts = async (
 
   const orderFn = orderDirection === "desc" ? desc : asc
 
-  const data = await db
-    .select()
-    .from(products)
-    .where(searchCondition as unknown as SQL<SearchConditions>)
-    .orderBy(
-      orderFn(orderByColumn) as unknown as SQL<SearchConditions>,
-      asc(products.id)
-    )
-    .limit(limit as number)
-    .offset(offset)
+  // Create cache key based on search parameters
+  const cacheKey = `search-${query}-${categorySlug || "all"}-${page}-${limit}-${orderBy}-${orderDirection}`
 
-  if (data.length === 0) {
-    const total = await getSearchProductsCount(query, categorySlug)
-    return {
-      data: [],
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasMore: false,
-      },
-    }
-  }
+  return unstable_cache(
+    async () => {
+      const data = await db
+        .select()
+        .from(products)
+        .where(searchCondition as unknown as SQL<SearchConditions>)
+        .orderBy(
+          orderFn(orderByColumn) as unknown as SQL<SearchConditions>,
+          asc(products.id)
+        )
+        .limit(limit as number)
+        .offset(offset)
 
-  const productIds = data.map((p) => p.id)
-  const sourcesData = await db
-    .select()
-    .from(sources)
-    .where(inArray(sources.productId, productIds))
+      if (data.length === 0) {
+        const total = await getSearchProductsCount(query, categorySlug)
+        return {
+          data: [],
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+            hasMore: false,
+          },
+        }
+      }
 
-  const productsWithSources: productType[] = data.map((product) => ({
-    ...product,
-    sources: sourcesData.filter(
-      (source: sourceType) => source.productId === product.id
-    ),
-  })) as productType[]
+      const productIds = data.map((p) => p.id)
+      const sourcesData = await db
+        .select()
+        .from(sources)
+        .where(inArray(sources.productId, productIds))
 
-  const total = await getSearchProductsCount(query, categorySlug)
+      const productsWithSources: productType[] = data.map((product) => ({
+        ...product,
+        sources: sourcesData.filter(
+          (source: sourceType) => source.productId === product.id
+        ),
+      })) as productType[]
 
-  return {
-    data: productsWithSources,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-      hasMore: offset + limit < total,
+      const total = await getSearchProductsCount(query, categorySlug)
+
+      return {
+        data: productsWithSources,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasMore: offset + limit < total,
+        },
+      }
     },
-  }
+    [cacheKey],
+    {
+      revalidate: CACHE_REVALIDATE,
+      tags: ["products", "search"],
+    }
+  )()
 }
