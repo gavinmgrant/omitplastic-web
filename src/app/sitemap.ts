@@ -4,6 +4,9 @@ import { reader } from "./keystatic/reader"
 
 const baseUrl = "https://www.omitplastic.com"
 
+// Revalidate sitemap once per week (7 days)
+export const revalidate = 604800
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries: MetadataRoute.Sitemap = [
     {
