@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
       static: 180, // 3 minutes for static routes
     },
   },
+  // Keystatic's reader loads content from the filesystem at runtime.
+  // Ensure guide MDX content is included in the Vercel server bundle.
+  outputFileTracingIncludes: {
+    "/**/*": ["./src/content/guides/**/*"],
+  },
 }
 
 export default nextConfig
